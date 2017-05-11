@@ -8,7 +8,7 @@ class MaskToPolygons:
     def __init__(self):
         pass
 
-    def processImage(self, image):
+    def processMask(self, image):
         categoryToMask = self.createMasks(image)
         categoryToPolygons = {}
 

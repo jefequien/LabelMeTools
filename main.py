@@ -17,7 +17,7 @@ for i in xrange(200):
     if os.path.exists(image_path):
         print "Processing image", num
         image = misc.imread(image_path)
-        categoryToPolygons, debug = converter.processImage(image)
+        categoryToPolygons, debug = converter.processMask(image)
 
         data = {}
         for category in categoryToPolygons:
