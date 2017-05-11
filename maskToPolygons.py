@@ -53,7 +53,7 @@ if __name__=="__main__":
     image = cv2.imread(name, 0)
 
     converter = MaskToPolygons()
-    categoryToPolygons, debug = converter.processImage(image)
+    categoryToPolygons, debug = converter.processMask(image)
     plt.imshow(debug)
     plt.show()
 
