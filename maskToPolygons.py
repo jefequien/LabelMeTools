@@ -18,7 +18,7 @@ class MaskToPolygons:
             mask = categoryToMask[category]
             mask = mask.astype(np.uint8)
 
-            im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             contours = [c for c,h in zip(contours, hierarchy[0]) if cv2.contourArea(c) > 100 and h[3] < 0]
 
             # Visualize

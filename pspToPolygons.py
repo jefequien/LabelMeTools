@@ -12,8 +12,8 @@ psp_path_sample = "./pspnet_sample"
 polygons_sample = "./polygons"
 
 # Comment out before running
-# psp_path = psp_path_sample
-# all_polygons_path = polygons_sample
+psp_path = psp_path_sample
+all_polygons_path = polygons_sample
 
 converter = MaskToPolygons()
 
