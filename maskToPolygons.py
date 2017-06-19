@@ -32,10 +32,7 @@ class MaskToPolygons:
                     n = c.shape[0]
                     c = c.reshape((n,2))
                     polygon = c.tolist()
-
-                    # Flip (h,w) to (x,y)
-                    flipped = [[p[1], p[0]] for p in polygon]
-                    polygons.append(flipped)
+                    polygons.append(polygon)
 
                 categoryToPolygons[cat] = polygons
         return categoryToPolygons, debug
