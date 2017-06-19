@@ -36,8 +36,8 @@ class MaskToPolygons:
                     polygons.append(polygon)
 
                 categoryToPolygons[cat] = polygons
-                
-        del categoryToPolygons[0]
+        if categoryToPolygons[0]:
+            del categoryToPolygons[0]
         return categoryToPolygons, debug
 
     def mapCategoryToMask(self, image):
