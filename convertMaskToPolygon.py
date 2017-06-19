@@ -8,51 +8,69 @@ import utils
 
 categories = utils.get_categories()
 
-def createPolygons(category_mask):
+def createObjects(category_mask):
     converter = MaskToPolygons()
     categoryToPolygons, debug = converter.process(category_mask)
 
-    data = {}
+    objects = []
+    counter = 0
     for cat in categoryToPolygons:
-        counter = 0
         for polygon in categoryToPolygons[cat]:
-            key = "{}#{}".format(categories[cat], counter)
-            data[key] = polygon
+            obj = {}
+            obj["name"] = categories[cat]
+            obj["polygon"] = polygon
+            obj["id"] = counter
             counter += 1
-    return data
+            objects.append(obj)
+    return objects
+
+def condense(string):
+    new_string = ""
+    for line in string.split("\n"):
+        if any(c in line for c in ['{', '}', ':']):
+            new_string += "\n" + line
+        else:
+            new_string += line.strip()
+    return new_string
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--list", help="Images list")
-parser.add_argument("--category_mask", help="Root category mask folder")
-parser.add_argument("--polygons", default="./polygons", help="Output polygons folder")
+parser.add_argument("-p", help="Project name")
 args = parser.parse_args()
 
+config = None
+with open("../LabelMe/data_config.json", 'r') as f:
+    data_config = json.load(f)
+    config = data_config[args.p]
 
-# root_category_mask = "/data/vision/torralba/scratch2/hangzhao/movie/pspnet_prediction/category_mask/"
-# root_polygons = "/data/vision/oliva/scenedataset/scaleplaces/movie/polygons"
-# txt_imlist = "/data/vision/torralba/scratch2/hangzhao/movie/images/images.txt"
+root_category_mask = config["category_mask"]
+root_polygons = config["polygons"]
+im_list_path = config["im_list"]
 
-root_category_mask = args.category_mask
-root_polygons = args.polygons
-txt_imlist = args.list
+im_list = []
+if im_list_path:
+    im_list = [line.rstrip() for line in open(im_list_path, 'r')]
+else:
+    im_list = [f.replace(".png", ".jpg") for f in os.listdir(root_category_mask) if ".png" in f]
 
-imlist = [line.rstrip() for line in open(txt_imlist, 'r')]
+for im in im_list:
+    print im
 
-counter = 0
-for txt_im in imlist:
-    if counter % 1000 == 0:
-        print txt_im
-    counter += 1
+    category_mask_name = im.replace(".jpg", ".png")
+    polygon_file = im.replace(".jpg", "-polygons.json")
 
-    category_mask_name = txt_im.replace(".jpg", ".png")
     category_mask = io.imread(os.path.join(root_category_mask, category_mask_name), as_grey=True)
-    data = createPolygons(category_mask)
+    objects = createObjects(category_mask)
 
-    polygon_file = txt_im.replace(".jpg", "-polygons.json")
+    data = {}
+    data["filename"] = im
+    data["folder"] = args.p
+    data["objects"] = objects
+
     polygon_file_path = os.path.join(root_polygons, polygon_file)
-
     if not os.path.exists(os.path.dirname(polygon_file_path)):
         os.makedirs(os.path.dirname(polygon_file_path))
     with open(polygon_file_path, 'w') as f:
-        json.dump(data, f)
+        string = json.dumps(data,indent=2, sort_keys=True)
+        string = condense(string)
+        f.write(string)
 
