@@ -55,8 +55,8 @@ def toXML(data):
     xml = "<annotation>\n{}</annotation>".format(body)
     return xml
 
-polygons_root = "/data/vision/oliva/scenedataset/scaleplaces/movie/polygons/"
-xml_root = "/data/vision/oliva/scenedataset/scaleplaces/movie/xml"
+polygons_root = "/data/vision/oliva/scenedataset/scaleplaces/movie/polygons/the_help_2011/"
+xml_root = "/data/vision/oliva/scenedataset/scaleplaces/movie/xml/the_help_2011/"
 
 for filename in os.listdir(polygons_root):
     if "-polygons.json" in filename:
