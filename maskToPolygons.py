@@ -12,7 +12,8 @@ class MaskToPolygons:
         categoryToMask = self.mapCategoryToMask(category_mask)
         categoryToPolygons = {}
 
-        debug = np.zeros(category_mask.shape)
+        # debug = np.zeros(category_mask.shape)
+        debug = None
 
         for cat in categoryToMask.keys():
             mask = categoryToMask[cat]
@@ -23,9 +24,9 @@ class MaskToPolygons:
                 contours = [c for c,h in zip(contours, hierarchy[0]) if cv2.contourArea(c) > self.min_size and h[3] < 0]
 
                 # Visualize
-                for c in contours:
-                    color = np.random.randint(0, 255, size=3)
-                    cv2.drawContours(debug, [c], -1, (color[0], color[1], color[2]), 3)
+                # for c in contours:
+                #     color = np.random.randint(0, 255, size=3)
+                #     cv2.drawContours(debug, [c], -1, (color[0], color[1], color[2]), 3)
 
                 polygons = []
                 for c in contours:
@@ -35,6 +36,8 @@ class MaskToPolygons:
                     polygons.append(polygon)
 
                 categoryToPolygons[cat] = polygons
+                
+        del categoryToPolygons[0]
         return categoryToPolygons, debug
 
     def mapCategoryToMask(self, image):
