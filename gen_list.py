@@ -1,13 +1,18 @@
 import os
 import sys
 import glob
-# scan the folder
+
 root = sys.argv[1]
-pattern = "*/*.jpg"
+depth = int(sys.argv[2])
+
+folders = "".join(["*/" for i in xrange(depth)])
+pattern = folders + "*.jpg"
+print pattern
 
 list_im = glob.glob(os.path.join(root, pattern))
 list_im.sort()
 
+print len(list_im)
 with open('images.txt','w') as f:
     num = len(pattern.split('/'))
     for line in list_im:
