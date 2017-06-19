@@ -36,7 +36,8 @@ class MaskToPolygons:
                     polygons.append(polygon)
 
                 categoryToPolygons[cat] = polygons
-        if categoryToPolygons[0]:
+                
+        if 0 in categoryToPolygons:
             del categoryToPolygons[0]
         return categoryToPolygons, debug
 
