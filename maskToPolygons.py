@@ -6,21 +6,21 @@ import numpy as np
 class MaskToPolygons:
 
     def __init__(self):
-        pass
+        self.min_size = 100
 
-    def processMask(self, image):
-        categoryToMask = self.createMasks(image)
+    def process(self, category_mask):
+        categoryToMask = self.mapCategoryToMask(category_mask)
         categoryToPolygons = {}
 
-        debug = np.zeros(image.shape)
+        debug = np.zeros(category_mask.shape)
 
-        for category in categoryToMask.keys():
-            mask = categoryToMask[category]
+        for cat in categoryToMask.keys():
+            mask = categoryToMask[cat]
             mask = mask.astype(np.uint8)
 
             contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             if contours:
-                contours = [c for c,h in zip(contours, hierarchy[0]) if cv2.contourArea(c) > 100 and h[3] < 0]
+                contours = [c for c,h in zip(contours, hierarchy[0]) if cv2.contourArea(c) > self.min_size and h[3] < 0]
 
                 # Visualize
                 for c in contours:
@@ -32,13 +32,15 @@ class MaskToPolygons:
                     n = c.shape[0]
                     c = c.reshape((n,2))
                     polygon = c.tolist()
-                    polygons.append(polygon)
 
-                categoryToPolygons[category] = polygons
+                    # Flip (h,w) to (x,y)
+                    flipped = [[p[1], p[0]] for p in polygon]
+                    polygons.append(flipped)
 
+                categoryToPolygons[cat] = polygons
         return categoryToPolygons, debug
 
-    def createMasks(self, image):
+    def mapCategoryToMask(self, image):
         categoryToMask = {}
         for i in xrange(image.shape[0]):
             for j in xrange(image.shape[1]):
@@ -51,10 +53,10 @@ class MaskToPolygons:
 
 if __name__=="__main__":
     name = sys.argv[1]
-    mask = cv2.imread(name, 0)
+    category_mask = cv2.imread(name, 0)
 
     converter = MaskToPolygons()
-    categoryToPolygons, debug = converter.processMask(mask)
+    categoryToPolygons = converter.process(category_mask)
     plt.imshow(debug)
     plt.show()
 

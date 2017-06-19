@@ -5,6 +5,8 @@ import numpy as np
 
 from collections import deque
 
+# Deprecated. Nothing uses this file
+
 class LoopFinder:
 
     def __init__(self, export_path):

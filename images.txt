@@ -1,0 +1,4 @@
+ade20k/ADE_train_00000002.jpg
+ade20k/ADE_train_00000003.jpg
+ade20k/ADE_train_00000004.jpg
+ade20k/ADE_train_00000005.jpg
