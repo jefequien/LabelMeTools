@@ -53,24 +53,25 @@ else:
     im_list = [f.replace(".png", ".jpg") for f in os.listdir(root_category_mask) if ".png" in f]
 
 for im in im_list:
-    print im
-
     category_mask_name = im.replace(".jpg", ".png")
     polygon_file = im.replace(".jpg", "-polygons.json")
+    category_mask_path = os.path.join(root_category_mask, category_mask_name)
 
-    category_mask = io.imread(os.path.join(root_category_mask, category_mask_name), as_grey=True)
-    objects = createObjects(category_mask)
+    if os.path.exists(category_mask_path):
+        print im
+        category_mask = io.imread(category_mask_path, as_grey=True)
+        objects = createObjects(category_mask)
 
-    data = {}
-    data["filename"] = im
-    data["folder"] = args.p
-    data["objects"] = objects
+        data = {}
+        data["filename"] = im
+        data["folder"] = args.p
+        data["objects"] = objects
 
-    polygon_file_path = os.path.join(root_polygons, polygon_file)
-    if not os.path.exists(os.path.dirname(polygon_file_path)):
-        os.makedirs(os.path.dirname(polygon_file_path))
-    with open(polygon_file_path, 'w') as f:
-        string = json.dumps(data,indent=2, sort_keys=True)
-        string = condense(string)
-        f.write(string)
+        polygon_file_path = os.path.join(root_polygons, polygon_file)
+        if not os.path.exists(os.path.dirname(polygon_file_path)):
+            os.makedirs(os.path.dirname(polygon_file_path))
+        with open(polygon_file_path, 'w') as f:
+            string = json.dumps(data,indent=2, sort_keys=True)
+            string = condense(string)
+            f.write(string)
 
