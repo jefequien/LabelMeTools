@@ -42,7 +42,8 @@ with open("../LabelMe/data_config.json", 'r') as f:
     data_config = json.load(f)
     config = data_config[args.p]
 
-root_category_mask = config["category_mask"]
+root_category_mask = os.path.join(config["pspnet_prediction"],"category_mask")
+# root_category_mask = config["ground_truth"]
 root_polygons = config["polygons"]
 im_list_path = config["im_list"]
 

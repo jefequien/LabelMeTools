@@ -19,9 +19,18 @@ class MaskToPolygons:
             mask = categoryToMask[cat]
             mask = mask.astype(np.uint8)
 
-            contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
+
             if contours:
                 contours = [c for c,h in zip(contours, hierarchy[0]) if cv2.contourArea(c) > self.min_size and h[3] < 0]
+                
+                # Approximate
+                approxs = []
+                for cnt in contours:
+                    epsilon = 0.001*cv2.arcLength(cnt,True)
+                    approx = cv2.approxPolyDP(cnt,epsilon,True)
+                    approxs.append(approx)
+                contours = approxs
 
                 # Visualize
                 for c in contours:
