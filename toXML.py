@@ -56,7 +56,9 @@ def toXML(data):
     return xml
 
 polygons_root = "/data/vision/oliva/scenedataset/scaleplaces/movie/polygons/the_help_2011/"
-xml_root = "/data/vision/oliva/scenedataset/scaleplaces/movie/xml/the_help_2011/"
+xml_root = "/data/vision/oliva/scenedataset/scaleplaces/movie/xml_approx/the_help_2011/"
+if not os.path.exists(xml_root):
+    os.makedirs(xml_root)
 
 for filename in os.listdir(polygons_root):
     if "-polygons.json" in filename:
