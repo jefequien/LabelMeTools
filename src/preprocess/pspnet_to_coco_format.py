@@ -8,11 +8,11 @@ from dummy_datasets import *
 
 def make_annotations(cm, pm):
     pm = pm / 255
-    pm = (pm > 0.5)
+    good = (pm > 0.5)
     anns = []
     for i in np.unique(cm):
         mask = (cm == i)
-        mask[pm] = 0
+        mask[~good] = 0
         cat = i + 1
 
         mask = np.asfortranarray(mask)
