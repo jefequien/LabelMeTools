@@ -5,7 +5,6 @@ import cv2
 
 from dummy_datasets import *
 
-from pycocotools.coco import COCO
 from pycocotools import mask as COCOmask
 
 def ann_image_to_annotations(ann_image):
