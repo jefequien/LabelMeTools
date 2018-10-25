@@ -44,4 +44,21 @@ def make_ann_fn(im_list, cat_list, im_dir, output_dir):
     ann_fn["categories"] = categories
     return ann_fn
 
+if __name__ = "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--split', type=str, default="val")
+    args = parser.parse_args()
+    
+    im_dir = "../datasets/ade20k/images/"
+    im_list = "../dataset/ade20k/images/validation.txt"
+    
+    with open(im_list,'r') as f:
+        im_list = f.read().splitlines()
+
+:
+
+
+
+
 
