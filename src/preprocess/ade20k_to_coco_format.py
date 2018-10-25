@@ -31,29 +31,35 @@ def make_ann_fn(im_dir, ann_dir, im_list, cat_list):
     images = []
     annotations = []
     categories = []
-    annId = 0
-    for imgId, im in enumerate(im_list):
-        im_path = os.path.join(im_dir, im)
-        image = cv2.imread(im_path)
+
+    # Categories
+    for i, name in enumerate(cat_list):
+        categories.append({"id": i, "name": name})
+
+    for imgId, im_name in enumerate(im_list):
+        print(imgId, im_name, len(annotations))
+
+        im_path = os.path.join(im_dir, im_name)
+        ann_path = os.path.join(ann_dir, im).replace('.jpg', '.png')
+
+        im = cv2.imread(im_path)
+        ann_image = cv2.imread(ann_path)
+
+        # Images
         img = {}
-        img["file_name"] = im
+        img["file_name"] = im_name
         img["id"] = imgId
-        img["height"] = image.shape[0]
-        img["width"] = image.shape[1]
+        img["height"] = im.shape[0]
+        img["width"] = im.shape[1]
         images.append(img)
         print(img["id"], img["file_name"])
 
-        ann_path = os.path.join(ann_dir, im).replace('.jpg', '.png')
-        ann_image = cv2.imread(ann_path)
+        # Annotations
         anns = ann_image_to_annotations(ann_image)
         for ann in anns:
             ann["image_id"] = imgId
-            ann["id"] = annId
+            ann["id"] = len(annotations)
             annotations.append(ann)
-            annId += 1
-
-    for i, name in enumerate(cat_list):
-        categories.append({"id": i, "name": name})
 
     ann_fn = {}
     ann_fn["images"] = images
