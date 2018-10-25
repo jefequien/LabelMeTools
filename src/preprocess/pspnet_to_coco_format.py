@@ -41,12 +41,13 @@ def make_ann_fn(im_list, cat_list, im_dir, out_dir):
     for imgId, im_name in enumerate(im_list):
         print(imgId, im_name, len(annotations))
         im_path = os.path.join(im_dir, im_name)
-        cm_path = os.path.join(cm_dir, im_name)
-        pm_path = os.path.join(pm_dir, im_name)
+        cm_path = os.path.join(cm_dir, im_name.replace('.jpg', '.png'))
+        pm_path = os.path.join(pm_dir, im_name.replace('.jpg', '.png'))
 
         im = cv2.imread(im_path)
         cm = cv2.imread(cm_path, 0)
         pm = cv2.imread(pm_path, 0)
+        print(np.unique(cm))
         if cm is None or pm is None:
             continue
 
