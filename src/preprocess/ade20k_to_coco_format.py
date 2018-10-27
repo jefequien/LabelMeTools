@@ -24,6 +24,7 @@ def ann_image_to_annotations(ann_image):
         ann = {}
         ann["segmentation"] = segm
         ann["category_id"] = int(cat)
+        ann["area"] = COCOmask.area(segm)
         anns.append(ann)
     return anns
 
@@ -79,7 +80,7 @@ if __name__ == "__main__":
     ann_dir = "./data/ade20k/annotations/"
     im_list = None
     cat_list = None
-    out_file = os.path.join(ann_dir, "ade20k_{}_{}.json".format(args.split, args.mode))
+    out_file = os.path.join(ann_dir, "{}_ade20k_{}.json".format(args.mode, args.split))
 
     if args.split == "train":
         im_list = os.path.join(im_dir, "training.txt")
