@@ -8,6 +8,7 @@ from dummy_datasets import *
 from pycocotools import mask as COCOmask
 
 def ann_image_to_annotations(ann_image):
+    crowd_mask = ann_image[:,:,0]
     ins_mask = ann_image[:,:,1]
     cat_mask = ann_image[:,:,2]
     anns = []
@@ -16,6 +17,8 @@ def ann_image_to_annotations(ann_image):
             continue
         mask = (ins_mask == ins)
         cat = np.sum(cat_mask[mask]) / np.sum(mask)
+        crowd = np.max(crowd_mask[mask])
+        
         mask = np.asfortranarray(mask)
         mask = mask.astype(np.uint8)
         segm = COCOmask.encode(mask)
@@ -24,7 +27,9 @@ def ann_image_to_annotations(ann_image):
         ann = {}
         ann["segmentation"] = segm
         ann["category_id"] = int(cat)
-        ann["area"] = COCOmask.area(segm)
+        ann["area"] = int(COCOmask.area(segm))
+        ann["bbox"] = list(COCOmask.toBbox(segm))
+        ann["iscrowd"] = int(crowd)
         anns.append(ann)
     return anns
 
@@ -35,13 +40,15 @@ def make_ann_fn(im_dir, ann_dir, im_list, cat_list):
 
     # Categories
     for i, name in enumerate(cat_list):
+        if i == 0:
+            continue
         categories.append({"id": i, "name": name})
 
     for imgId, im_name in enumerate(im_list):
         print(imgId, im_name, len(annotations))
 
         im_path = os.path.join(im_dir, im_name)
-        ann_path = os.path.join(ann_dir, im).replace('.jpg', '.png')
+        ann_path = os.path.join(ann_dir, im_name).replace('.jpg', '.png')
 
         im = cv2.imread(im_path)
         ann_image = cv2.imread(ann_path)
@@ -53,7 +60,6 @@ def make_ann_fn(im_dir, ann_dir, im_list, cat_list):
         img["height"] = im.shape[0]
         img["width"] = im.shape[1]
         images.append(img)
-        print(img["id"], img["file_name"])
 
         # Annotations
         anns = ann_image_to_annotations(ann_image)
@@ -76,8 +82,8 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--mode', type=str, default="instances")
     args = parser.parse_args()
 
-    im_dir = "./data/ade20k/images/"
-    ann_dir = "./data/ade20k/annotations/"
+    im_dir = "../data/ade20k/images/"
+    ann_dir = "../data/ade20k/annotations/"
     im_list = None
     cat_list = None
     out_file = os.path.join(ann_dir, "{}_ade20k_{}.json".format(args.mode, args.split))
