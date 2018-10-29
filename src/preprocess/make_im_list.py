@@ -22,9 +22,9 @@ def split_im_list(im_list, n):
     return im_lists
 
 def write_im_list(im_list, out_fn):
+    out_str = "\n".join(im_list)
     with open(out_fn,'w') as f:
-        for im_name in im_list:
-            f.write(im_name + '\n')
+        f.write(out_str)
 
 
 if __name__ == "__main__":
@@ -35,12 +35,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     im_list = make_im_list(args.im_dir, args.glob_path)
+    random.seed(1)
     random.shuffle(im_list)
+    print(len(im_list), "images")
     im_lists = [im_list]
-    if (args.max_num):
+    if args.max_num != None:
         im_lists = split_im_list(im_list, args.max_num)
 
     for i, im_list in enumerate(im_lists):
         out_fn = "images{}.txt".format(i)
-        write_im_list(im_list)
+        print("{} / {}".format(i+1, len(im_lists)), out_fn)
+        write_im_list(im_list, out_fn)
 
