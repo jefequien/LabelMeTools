@@ -1,4 +1,5 @@
 import os
+import argparse
 import json
 import numpy as np
 from itertools import chain
@@ -8,6 +9,7 @@ except:
     from itertools import izip_longest as zip_longest
 
 from pycocotools.coco import COCO
+from coco_format import save_ann_fn
 
 def maskToRLE(mask):
     h, w = mask.shape
@@ -35,16 +37,10 @@ def maskToRLE(mask):
 
 
 if __name__ == "__main__":
-    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input_file', type=str)
     parser.add_argument('-o', '--output_dir', type=str)
     args = parser.parse_args()
-
-    out_fn = os.path.basename(args.input_file).replace('.json', '_#.json')
-    out_path = os.path.join(args.output_dir, out_fn)
-    if not os.path.exists(os.path.dirname(out_path)):
-        os.makedirs(os.path.dirname(out_path))
 
     coco = COCO(args.input_file)
     c = 0
@@ -55,9 +51,10 @@ if __name__ == "__main__":
         mask = coco.annToMask(ann)
         ann["segmentation"] = maskToRLE(mask)
 
-    output = {}
-    output["images"] = list(coco.imgs.values())
-    output["annotations"] = list(coco.anns.values())
-    output["categories"] = list(coco.cats.values())
-    with open(out_path, 'w') as f:
-        json.dump(output, f, indent=2)
+    out_fn = os.path.basename(args.input_file).replace('.json', '_#.json')
+    out_file = os.path.join(args.output_dir, out_fn)
+
+    images = list(coco.imgs.values())
+    annotations = list(coco.anns.values())
+    categories = list(coco.cats.values())
+    save_ann_fn(images, annotations, categories, out_file)
