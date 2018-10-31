@@ -3,8 +3,9 @@ import argparse
 
 from im_list_make import *
 
-def read_im_list(im_list_fn):
-    with open(args.im_list) as f:
+def read_im_list(path):
+    print(path)
+    with open(path) as f:
         im_list = f.read().splitlines()
         return im_list
 
@@ -16,14 +17,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     im_list = []
-    for fn in os.listdir(args.im_list_dir):
-        print(fn)
-        im_list += read_im_list(fn)
+    fns = os.listdir(args.im_list_dir)
+    for i in range(len(fns)):
+        fn = "images{}.txt".format(i)
+        path = os.path.join(args.im_list_dir, fn)
+        im_list += read_im_list(path)
 
     print(len(im_list))
 
-    im_lists = split_im_list(im_list, args.m)
+    im_lists = split_im_list(im_list, args.max_num)
     for i, im_list in enumerate(im_lists):
-        out_fn = "images{}.txt".format(i)
+        out_fn = "images%03d.txt" % i
         print("{} / {}".format(i+1, len(im_lists)), out_fn)
         write_im_list(im_list, out_fn)

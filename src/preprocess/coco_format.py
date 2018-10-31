@@ -18,8 +18,10 @@ def save_ann_fn(images, annotations, categories, out_file):
             json.dump(ann_fn, f, indent=2)
 
 def make_images(im_dir, im_list):
+    print("Making images...")
     images = []
     for imgId, im_name in enumerate(im_list):
+        print(imgId, im_name)
         im_path = os.path.join(im_dir, im_name)
         im = cv2.imread(im_path)
 
@@ -32,10 +34,12 @@ def make_images(im_dir, im_list):
     return images
 
 def make_categories(cat_list):
+    print("Making categories...")
     categories = []
     for i, name in enumerate(cat_list):
         if i == 0:
             continue
+        print(i, name)
         categories.append({"id": i, "name": name})
     return categories
 

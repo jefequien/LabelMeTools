@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 
 from dummy_datasets import get_ade150_dataset
+from coco_format import *
 
 def make_annotations(cm, pm):
     anns = []
@@ -27,10 +28,11 @@ def make_annotations(cm, pm):
     return anns
 
 def make_annotations(ann_dir, im_list):
+    print("Making annotations...")
     annotations = []
 
-    cm_dir = os.path.join(out_dir, "cm")
-    pm_dir = os.path.join(out_dir, "pm")
+    cm_dir = os.path.join(ann_dir, "cm")
+    pm_dir = os.path.join(ann_dir, "pm")
 
     for imgId, im_name in enumerate(im_list):
         print(imgId, im_name, len(annotations))
@@ -68,6 +70,7 @@ if __name__ == "__main__":
     im_list = []
     with open(args.im_list,'r') as f:
         im_list = f.read().splitlines()
+    print(len(im_list))
 
     images = make_images(args.im_dir, im_list)
     categories = make_categories(cat_list)

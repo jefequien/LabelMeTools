@@ -7,6 +7,7 @@ from dummy_datasets import get_ade150_dataset
 from coco_format import *
 
 def make_annotations(ann_dir, im_list):
+    ann_dir = os.path.join(ann_dir, "pixels")
     annotations = []
     for imgId, im_name in enumerate(im_list):
         print(imgId, im_name, len(annotations))
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     im_dir = "../data/ade20k/images/"
-    ann_dir = "../data/ade20k/annotations/pixels"
+    ann_dir = "../data/ade20k/annotations/"
     cat_list = get_ade150_dataset()
     im_list = []
 
