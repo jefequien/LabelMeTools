@@ -7,27 +7,40 @@ from changeRLE import maskToRLE
 from pycocotools import mask as COCOmask
 from pycocotools.coco import COCO
 
-def make_task(img_url, anns, coco):
+IMAGES_URL = "http://places.csail.mit.edu/scaleplaces/datasets/"
+
+def make_task(imgId, annIds, coco):
+    file_name = coco.imgs[imgId]["file_name"]
+
     annotations = []
+    anns = coco.loadAnns(annIds);
     for ann in anns:
         rle = ann['segmentation']
         mask = COCOmask.decode(rle)
-        custom_rle = maskToRLE(mask)
 
-        a = {}
-        a["category"] = coco.cats[ann['category_id']]['name']
-        a["segmentation"] = custom_rle
-        annotations.append(a)
+        ann = {}
+        ann["name"] = coco.cats[ann['category_id']]['name']
+        ann["segmentation"] = maskToRLE(mask)
+        annotations.append(ann)
 
     task = {}
     task["image_url"] = img_url
     task["annotations"] = annotations
     return task
 
+def get_image_dir(dataset_name):
+    if "ade" in dataset_name:
+        return "ade20k/images"
+    elif "coco" in dataset_name:
+        return "coco/images"
+    elif "places" in dataset_name:
+        return "places/images"
+    else:
+        raise Exception("Dataset not implemented")
+
 
 if __name__ == "__main__":
-    IMAGES_URL = "http://places.csail.mit.edu/scaleplaces/datasets/"
-    im_dir = os.path.join(IMAGES_URL, "ade20k/images/training")
+    im_dir = os.path.join(IMAGES_URL, "ade20k/images")
     ann_fn = "ade20k_train_annotations.json"
     coco = COCO(ann_fn)
 

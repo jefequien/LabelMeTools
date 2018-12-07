@@ -34,12 +34,10 @@ def make_images(im_dir, im_list):
     return images
 
 def make_categories(cat_list):
-    print("Making categories...")
     categories = []
     for i, name in enumerate(cat_list):
         if i == 0:
             continue
-        print(i, name)
         categories.append({"id": i, "name": name})
     return categories
 
@@ -56,3 +54,4 @@ def make_ann(mask, cat, iscrowd=0):
     ann["bbox"] = list(COCOmask.toBbox(segm))
     ann["iscrowd"] = int(iscrowd)
     return ann
+

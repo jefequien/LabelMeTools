@@ -49,8 +49,8 @@ if __name__ == "__main__":
     with open(im_list,'r') as f:
         im_list = f.read().splitlines()
 
-    #images = make_images(im_dir, im_list)
-    #categories = make_categories(cat_list)
+    images = make_images(im_dir, im_list)
+    categories = make_categories(cat_list)
     annotations = make_annotations(ann_dir, im_list)
 
     out_file = os.path.join(ann_dir, "instances_ade20k_{}.json".format(args.split))
