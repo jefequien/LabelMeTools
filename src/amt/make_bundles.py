@@ -27,13 +27,15 @@ def make_bundle_for_category(coco, catId, out_file):
     for imgId in imgIds:
         images.append(coco.imgs[imgId])
 
+    random.shuffle(annotations)
+
     print("{}: {} annotations, {} images".format(coco.cats[catId]["name"], len(annotations), len(images)))
     save_ann_fn(images, annotations, categories, out_file)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--ann_fn', type=str, default="../data/test/detections_0.5_#.json")
+    parser.add_argument('-i', '--ann_fn', type=str, default="../data/test/detections_0.5_#.json")
     parser.add_argument('-o', '--out_dir', type=str, default="../data/test/")
     args = parser.parse_args()
 
