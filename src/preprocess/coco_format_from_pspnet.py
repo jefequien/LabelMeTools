@@ -76,7 +76,7 @@ if __name__ == "__main__":
     categories = make_categories(cat_list)
     annotations = make_annotations(args.out_dir, im_list)
 
-    out_file = os.path.join(args.out_dir, "predictions_pspnet.json")
+    out_file = os.path.join(args.out_dir, "predictions.json")
     save_ann_fn(images, annotations, categories, out_file)
 
 

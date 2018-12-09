@@ -27,8 +27,6 @@ def make_bundle_for_category(coco, catId, out_file):
     for imgId in imgIds:
         images.append(coco.imgs[imgId])
 
-    random.shuffle(annotations)
-
     print("{}: {} annotations, {} images".format(coco.cats[catId]["name"], len(annotations), len(images)))
     save_ann_fn(images, annotations, categories, out_file)
 

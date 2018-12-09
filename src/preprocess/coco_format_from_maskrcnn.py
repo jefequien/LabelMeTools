@@ -59,10 +59,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--im_dir', type=str, default="../data/ade20k/images/")
     parser.add_argument('-l', '--im_list', type=str, default="../data/ade20k/images/validation.txt")
+    parser.add_argument('-c', '--categories', type=str, default="coco")
     parser.add_argument('-p', '--pkl', type=str, default=None)
     args = parser.parse_args()
 
-    cat_list = get_coco_dataset()
+    cat_list = []
+    if args.categories == "coco":
+        cat_list = get_coco_dataset()
+    elif args.categories == "ade":
+        cat_list = get_ade_dataset()
+
     im_list = []
     with open(args.im_list,'r') as f:
         im_list = f.read().splitlines()
@@ -76,7 +82,7 @@ if __name__ == "__main__":
     annotations = make_annotations(detections, im_list)
 
     out_dir = os.path.dirname(args.pkl)
-    out_file = os.path.join(out_dir, "predictions_maskrcnn.json")
+    out_file = os.path.join(out_dir, "predictions.json")
     save_ann_fn(images, annotations, categories, out_file)
 
 
