@@ -11,7 +11,6 @@ def get_im_list(im_dir):
             im_list.append(name)
     print(len(im_list))
     im_list.sort()
-    im_list = im_list[:100]
     return im_list
 
 def write_video(im_list, outdir):
