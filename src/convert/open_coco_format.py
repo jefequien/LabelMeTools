@@ -1,3 +1,4 @@
+import argparse
 import json
 from pycocotools.coco import COCO
 
@@ -17,8 +18,9 @@ def open_coco(ann_fn):
 
 
 if __name__ == "__main__":
-    ade_ann_fn = "../data/ade20k/annotations/instances_ade20k_val.json"
-    coco_ann_fn = "../data/coco/annotations/instances_train2017.json"
-    open_coco(ade_ann_fn)
-    open_coco(coco_ann_fn)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input-file', type=str)
+    args = parser.parse_args()
+
+    open_coco(args.input_file)
 
