@@ -11,16 +11,17 @@ def get_im_list(im_dir):
             im_list.append(name)
     print(len(im_list))
     im_list.sort()
+    im_list = im_list[:100]
     return im_list
 
 def write_video(im_list, outdir):
     # Define the codec and create VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    out = cv2.VideoWriter(os.path.join(outdir, 'output.mp4'),fourcc, 20.0, (1024, 2048))
+    out = cv2.VideoWriter(os.path.join(outdir, 'output.mp4'),fourcc, 3.0, (2048, 1024))
 
-    for im_name in im_list:
+    for i,im_name in enumerate(im_list):
         im = cv2.imread(im_name)
-        print(im_name, im.shape)
+        print(i, im_name, im.shape)
         out.write(im)
 
         # cv2.imshow('frame',im)
