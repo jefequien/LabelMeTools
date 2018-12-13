@@ -104,12 +104,12 @@ if __name__ == "__main__":
         ann_fn = os.path.join(indir, vid_name + ".json")
 
         if not os.path.exists(vid_fn):
-            print "Could not load video", vid_fn
+            print("Could not load video", vid_fn)
             continue
 
         if not os.path.exists(ann_fn):
-            print "Could not load annotations", ann_fn
+            print("Could not load annotations", ann_fn)
             continue
 
-        # process_video(vid_fn, img_dir)
-        process_annotations(vid_fn, ann_fn, ann_dir)
+        process_video(vid_fn, img_dir)
+        # process_annotations(vid_fn, ann_fn, ann_dir)
