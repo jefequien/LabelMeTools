@@ -1,7 +1,9 @@
 import argparse
 import os
 import cv2
+from pycocotools.coco import COCO
 
+from convert.coco_format import *
 from video_annotation import VideoAnnotation, read_file
 
 def process_video(vid_fn, img_dir):
@@ -17,9 +19,10 @@ def process_video(vid_fn, img_dir):
         if (frame_num % 10 != 0):
             frame_num += 1
             continue
-        print("{}/{}".format(frame_num, length))
 
-        frame_name = "{}_{}.jpg".format(vid_name, frame_num)
+        frame_name = "{}/{}_{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
+        print("{}/{}".format(frame_num, length), frame_name)
+
         img_path = os.path.join(img_dir, frame_name)
         if not os.path.exists(os.path.dirname(img_path)):
             os.makedirs(os.path.dirname(img_path))
@@ -34,28 +37,47 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
     cap.release()
 
     vid_ann = VideoAnnotation(ann_fn)
-    images = []
+    im_list = []
     annotations = []
-    categories = []
+    cat_list = ["__background__"]
 
     img_id = 0
     for frame_num in range(0, length, 10):
         objs = vid_ann.get_objects_at_frame(frame_num)
-        evts = vid_ann.get_events_at_frame(frame_num)
+        # evts = vid_ann.get_events_at_frame(frame_num)
+        # objs = objs + evts
+
         for obj in objs:
+            name = obj["name"]
+            if name not in cat_list:
+                cat_list.append(name)
+            cat_id = cat_list.index(name)
+
             ann = {}
             ann["image_id"] = img_id
             ann["id"] = len(annotations)
-            annotations.append(ann)
-        for evt in evts:
-            ann = {}
-            ann["image_id"] = img_id
-            ann["id"] = len(annotations)
+            ann["bbox"] = obj["bbox"]
+            ann["category_id"] = cat_id
+            ann["iscrowd"] = 0
             annotations.append(ann)
 
-        frame_name = "{}_{}.jpg".format(vid_name, frame_num)
+        frame_name = "{}/{}_{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
+        im_list.append(frame_name)
+
+        print(img_id, frame_name, len(annotations))
         img_id += 1
 
+    images = make_images(im_list)
+    categories = make_categories(cat_list)
+
+    out_fn = os.path.join(ann_dir, args.split, vid_name + ".json")
+    save_ann_fn(images, annotations, categories, out_fn)
+
+    # Test file
+    coco = COCO(out_fn)
+    print(len(coco.imgs))
+    print(len(coco.anns))
+    print(len(coco.cats))
 
 
 if __name__ == "__main__":
@@ -74,8 +96,8 @@ if __name__ == "__main__":
     vid_list = [os.path.splitext(k)[0] for k in file_index]
     vid_list.sort()
 
-    img_dir = os.path.join(args.outdir, "images", args.split)
-    ann_dir = os.path.join(args.outdir, "annotations", args.split)
+    img_dir = os.path.join(args.outdir, "images")
+    ann_dir = os.path.join(args.outdir, "annotations")
     for vid_name in vid_list:
         print(vid_name)
         vid_fn = os.path.join(VID_DIR, vid_name + ".mp4")
@@ -89,5 +111,5 @@ if __name__ == "__main__":
             print "Could not load annotations", ann_fn
             continue
 
-        process_video(vid_fn, img_dir)
-        # process_annotations(vid_fn, ann_fn, ann_dir)
+        # process_video(vid_fn, img_dir)
+        process_annotations(vid_fn, ann_fn, ann_dir)

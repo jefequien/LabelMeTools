@@ -17,27 +17,25 @@ def save_ann_fn(images, annotations, categories, out_file):
     with open(out_file, 'w') as f:
             json.dump(ann_fn, f, indent=2)
 
-def make_images(im_dir, im_list):
+def make_images(im_list, im_dir = None):
     print("Making images...")
     images = []
     for imgId, im_name in enumerate(im_list):
-        print(imgId, im_name)
-        im_path = os.path.join(im_dir, im_name)
-        im = cv2.imread(im_path)
-
         img = {}
         img["file_name"] = im_name
         img["id"] = imgId
-        img["height"] = im.shape[0]
-        img["width"] = im.shape[1]
+        if im_dir != None:
+            im_path = os.path.join(im_dir, im_name)
+            im = cv2.imread(im_path)
+            img["height"] = im.shape[0]
+            img["width"] = im.shape[1]
+
         images.append(img)
     return images
 
 def make_categories(cat_list):
     categories = []
     for i, name in enumerate(cat_list):
-        if i == 0:
-            continue
         categories.append({"id": i, "name": name})
     return categories
 

@@ -77,7 +77,7 @@ if __name__ == "__main__":
     with open(args.pkl, 'rb') as f:
         detections = pickle.load(f)
 
-    images = make_images(args.im_dir, im_list)
+    images = make_images(im_list, args.im_dir)
     categories = make_categories(cat_list)
     annotations = make_annotations(detections, im_list)
 

@@ -72,7 +72,7 @@ if __name__ == "__main__":
         im_list = f.read().splitlines()
     print(len(im_list))
 
-    images = make_images(args.im_dir, im_list)
+    images = make_images(im_list, args.im_dir)
     categories = make_categories(cat_list)
     annotations = make_annotations(args.out_dir, im_list)
 
