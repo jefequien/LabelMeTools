@@ -10,19 +10,14 @@ def get_im_list(im_dir):
             if '.jpg' in name or '.png' in name:
                 name = os.path.join(root, name)
                 im_list.append(name)
-    print(len(im_list))
     im_list.sort()
+    print(len(im_list), "images")
     return im_list
 
-def write_video(im_list, outdir, full=False):
-    print(im_list[0])
+def write_video(im_list, out_fn):
     im = cv2.imread(im_list[0])
     h = im.shape[0]
     w = im.shape[1]
-    out_fn = os.path.join(outdir, 'output_full.mp4')
-    if not full:
-        out_fn = os.path.join(outdir, 'output.mp4')
-        im_list = im_list[:100]
 
     # Define the codec and create VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
@@ -49,8 +44,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     im_list = get_im_list(args.indir)
-    write_video(im_list, args.outdir, full=False)
-    write_video(im_list, args.outdir, full=True)
+    out_fn = os.path.basename(os.path.normpath(args.indir))
+    out_fn = os.path.join(args.outdir, '{}.mp4'.format(out_fn))
+    print(out_fn)
 
-
+    write_video(im_list, out_fn)
+    write_video(im_list[:100], out_fn.replace('.mp4', '_short.mp4'))
 
