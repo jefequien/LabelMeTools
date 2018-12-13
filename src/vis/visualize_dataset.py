@@ -42,7 +42,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--im_dir', type=str, default="../data/virat/images/")
     parser.add_argument('-a', '--ann_fn', type=str, default="../data/virat/annotations/train/VIRAT_S_000002.json")
-    parser.add_argument('-o', '--outdir', type=str, default="../data/virat/vis")
+    parser.add_argument('-o', '--outdir', type=str, default="../data/virat/vis/")
     args = parser.parse_args()
 
     visualize_dataset(args.im_dir, args.ann_fn, args.outdir)

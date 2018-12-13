@@ -21,7 +21,7 @@ def write_video(im_list, out_fn):
 
     # Define the codec and create VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    out = cv2.VideoWriter(out_fn, fourcc, 3.0, (w, h))
+    out = cv2.VideoWriter(out_fn, fourcc, 10.0, (w, h))
 
     for i,im_name in enumerate(im_list):
         im = cv2.imread(im_name)

@@ -16,11 +16,11 @@ def process_video(vid_fn, img_dir):
         ret, frame = cap.read()
         if not ret:
             break
-        if (frame_num % 10 != 0):
+        if (frame_num % 3 != 0):
             frame_num += 1
             continue
 
-        frame_name = "{}/{}_{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
+        frame_name = "{}/{}/{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
         print("{}/{}".format(frame_num, length), frame_name)
 
         img_path = os.path.join(img_dir, frame_name)
@@ -42,7 +42,7 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
     cat_list = ["__background__"]
 
     img_id = 0
-    for frame_num in range(0, length, 10):
+    for frame_num in range(0, length, 3):
         objs = vid_ann.get_objects_at_frame(frame_num)
         # evts = vid_ann.get_events_at_frame(frame_num)
         # objs = objs + evts
@@ -61,7 +61,7 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
             ann["iscrowd"] = 0
             annotations.append(ann)
 
-        frame_name = "{}/{}_{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
+        frame_name = "{}/{}/{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
         im_list.append(frame_name)
 
         print(img_id, frame_name, len(annotations))
@@ -111,5 +111,5 @@ if __name__ == "__main__":
             print("Could not load annotations", ann_fn)
             continue
 
-        process_video(vid_fn, img_dir)
-        # process_annotations(vid_fn, ann_fn, ann_dir)
+        # process_video(vid_fn, img_dir)
+        process_annotations(vid_fn, ann_fn, ann_dir)
