@@ -14,7 +14,11 @@ def get_im_list(im_dir):
     print(len(im_list), "images")
     return im_list
 
-def write_video(im_list, out_fn):
+def write_video(im_dir, out_fn, short=False):
+    im_list = get_im_list(im_dir)
+    if short:
+        im_list = im_list[:100]
+
     im = cv2.imread(im_list[0])
     h = im.shape[0]
     w = im.shape[1]
@@ -37,17 +41,15 @@ def write_video(im_list, out_fn):
     cv2.destroyAllWindows()
 
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--indir', type=str)
     parser.add_argument('-o', '--outdir', type=str)
     args = parser.parse_args()
 
-    im_list = get_im_list(args.indir)
-    out_fn = os.path.basename(os.path.normpath(args.indir))
-    out_fn = os.path.join(args.outdir, '{}.mp4'.format(out_fn))
-    print(out_fn)
-
-    write_video(im_list, out_fn)
-    # write_video(im_list[:100], out_fn.replace('.mp4', '_short.mp4'))
+    for im_dir in os.listdir(args.indir):
+        print(im_dir)
+        out_fn = os.path.join(args.outdir, '{}.mp4'.format(im_dir))
+        write_video(os.path.join(args.indir, im_dir), out_fn, short=True)
 
