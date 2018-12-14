@@ -20,13 +20,13 @@ def save_ann_fn(images, annotations, categories, out_file):
             json.dump(ann_fn, f, indent=2)
 
 def make_images(im_list, im_dir=None, shape=None):
-    print("Making images...")
     images = []
     for imgId, im_name in enumerate(im_list):
         img = {}
         img["file_name"] = im_name
         img["id"] = imgId
         if im_dir != None:
+            print("Opening images...")
             im_path = os.path.join(im_dir, im_name)
             im = cv2.imread(im_path)
             img["height"] = im.shape[0]
@@ -59,9 +59,9 @@ def make_ann(mask, cat, iscrowd=0):
 
 def open_coco(ann_fn):
     coco = COCO(ann_fn)
-    print(len(coco.imgs))
-    print(len(coco.anns))
-    print(len(coco.cats))
+    print(len(coco.imgs), "images")
+    print(len(coco.anns), "annotations")
+    print(len(coco.cats), "categories")
     for n, id in enumerate(coco.imgs):
         print(coco.imgs[id])
         if n > 10:

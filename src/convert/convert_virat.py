@@ -51,6 +51,7 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
 
         for obj in objs:
             name = obj["name"]
+            bbox = obj["bbox"]
             if name not in cat_list:
                 cat_list.append(name)
             cat_id = cat_list.index(name)
@@ -58,15 +59,14 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
             ann = {}
             ann["image_id"] = img_id
             ann["id"] = len(annotations)
-            ann["bbox"] = obj["bbox"]
+            ann["bbox"] = bbox
             ann["category_id"] = cat_id
             ann["iscrowd"] = 0
+            ann["area"] = bbox[2] * bbox[3]
             annotations.append(ann)
 
         frame_name = "{}/{}/{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
         im_list.append(frame_name)
-
-        print(img_id, frame_name, len(annotations))
         img_id += 1
 
     images = make_images(im_list, shape=(frame_height, frame_width))
