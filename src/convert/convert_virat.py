@@ -67,7 +67,7 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
         print(img_id, frame_name, len(annotations))
         img_id += 1
 
-    images = make_images(im_list)
+    images = make_images(im_list, os.path.join("../data/virat/images"))
     categories = make_categories(cat_list)
 
     out_fn = os.path.join(ann_dir, args.split, vid_name + ".json")
