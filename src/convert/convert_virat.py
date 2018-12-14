@@ -3,8 +3,8 @@ import os
 import cv2
 from pycocotools.coco import COCO
 
-from convert.coco_format import *
-from video_annotation import VideoAnnotation, read_file
+from coco_format import *
+from virat_format import VideoAnnotation, read_file
 
 def process_video(vid_fn, img_dir):
     cap = cv2.VideoCapture(vid_fn)
@@ -72,12 +72,7 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
 
     out_fn = os.path.join(ann_dir, args.split, vid_name + ".json")
     save_ann_fn(images, annotations, categories, out_fn)
-
-    # Test file
-    coco = COCO(out_fn)
-    print(len(coco.imgs))
-    print(len(coco.anns))
-    print(len(coco.cats))
+    open_coco(out_fn)
 
 
 if __name__ == "__main__":

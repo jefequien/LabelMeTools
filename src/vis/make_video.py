@@ -49,5 +49,5 @@ if __name__ == "__main__":
     print(out_fn)
 
     write_video(im_list, out_fn)
-    write_video(im_list[:100], out_fn.replace('.mp4', '_short.mp4'))
+    # write_video(im_list[:100], out_fn.replace('.mp4', '_short.mp4'))
 

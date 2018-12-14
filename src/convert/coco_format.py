@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 
 from pycocotools import mask as COCOmask
+from pycocotools.coco import COCO
 
 def save_ann_fn(images, annotations, categories, out_file):
     ann_fn = {}
@@ -53,3 +54,27 @@ def make_ann(mask, cat, iscrowd=0):
     ann["iscrowd"] = int(iscrowd)
     return ann
 
+def open_coco(ann_fn):
+    coco = COCO(ann_fn)
+    print(len(coco.imgs))
+    print(len(coco.anns))
+    print(len(coco.cats))
+    for n, id in enumerate(coco.imgs):
+        print(coco.imgs[id])
+        if n > 10:
+            break
+
+    for n, id in enumerate(coco.anns):
+        print(coco.anns[id])
+        if n > 10:
+            break
+    for n, id in enumerate(coco.cats):
+        print(coco.cats[id])
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input-file', type=str)
+    args = parser.parse_args()
+
+    open_coco(args.input_file)
