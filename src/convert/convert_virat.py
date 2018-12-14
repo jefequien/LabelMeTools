@@ -63,6 +63,8 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
             ann["category_id"] = cat_id
             ann["iscrowd"] = 0
             ann["area"] = bbox[2] * bbox[3]
+            ann["num_keypoints"] = 0
+            ann["keypoints"] = [0]*17*3
             annotations.append(ann)
 
         frame_name = "{}/{}/{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
