@@ -34,6 +34,8 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
     cap = cv2.VideoCapture(vid_fn)
     vid_name = os.path.splitext(os.path.basename(vid_fn))[0]
     length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     cap.release()
 
     vid_ann = VideoAnnotation(ann_fn)
@@ -67,7 +69,7 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
         print(img_id, frame_name, len(annotations))
         img_id += 1
 
-    images = make_images(im_list, os.path.join("../data/virat/images"))
+    images = make_images(im_list, shape=(frame_height, frame_width))
     categories = make_categories(cat_list)
 
     out_fn = os.path.join(ann_dir, args.split, vid_name + ".json")

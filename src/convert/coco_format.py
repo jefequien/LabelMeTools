@@ -19,7 +19,7 @@ def save_ann_fn(images, annotations, categories, out_file):
     with open(out_file, 'w') as f:
             json.dump(ann_fn, f, indent=2)
 
-def make_images(im_list, im_dir = None):
+def make_images(im_list, im_dir=None, shape=None):
     print("Making images...")
     images = []
     for imgId, im_name in enumerate(im_list):
@@ -31,7 +31,9 @@ def make_images(im_list, im_dir = None):
             im = cv2.imread(im_path)
             img["height"] = im.shape[0]
             img["width"] = im.shape[1]
-
+        elif shape != None:
+            img["height"] = shape[0]
+            img["width"] = shape[1]
         images.append(img)
     return images
 
