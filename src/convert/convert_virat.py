@@ -20,7 +20,7 @@ def process_video(vid_fn, img_dir):
             frame_num += 1
             continue
 
-        frame_name = "{}/{}/{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
+        frame_name = "{}/{}/{}_{}.jpg".format(args.split, vid_name, vid_name, str(frame_num).zfill(6))
         print("{}/{}".format(frame_num, length), frame_name)
 
         img_path = os.path.join(img_dir, frame_name)
@@ -67,7 +67,7 @@ def process_annotations(vid_fn, ann_fn, ann_dir):
             ann["keypoints"] = [0]*17*3
             annotations.append(ann)
 
-        frame_name = "{}/{}/{}.jpg".format(args.split, vid_name, str(frame_num).zfill(6))
+        frame_name = "{}/{}/{}_{}.jpg".format(args.split, vid_name, vid_name, str(frame_num).zfill(6))
         im_list.append(frame_name)
         img_id += 1
 
@@ -110,5 +110,5 @@ if __name__ == "__main__":
             print("Could not load annotations", ann_fn)
             continue
 
-        # process_video(vid_fn, img_dir)
+        process_video(vid_fn, img_dir)
         process_annotations(vid_fn, ann_fn, ann_dir)
