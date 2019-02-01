@@ -9,7 +9,7 @@ from pycocotools.coco import COCO
 from pycocotools import mask as COCOmask
 from pycocotools.cocoeval import COCOeval
 
-from preprocess.coco_format import *
+# from coco_utils.coco_format import *
 # import json_dataset_evaluator
 
 def print_stats(coco):
@@ -108,7 +108,7 @@ def study(cocoGt, cocoDt, cat_list):
         m = matches[catId]
         c_gt = counts_gt[catId]
         c_dt = counts_dt[catId]
-        print catName, m, 1.*m/c_dt, 1.*m/c_gt 
+        print(catName, m, 1.*m/c_dt, 1.*m/c_gt)
 
     # print("Counts GT:", counts_gt)
     # print("Counts DT:", counts_dt)
@@ -119,8 +119,10 @@ def study(cocoGt, cocoDt, cat_list):
 
 
 if __name__ == "__main__":
-    gt_fn = "../data/ade20k_val_instances.json"
-    dt_fn = "../data/ade20k_val_predictions.json"
+    # gt_fn = "../data/ade20k_val_instances.json"
+    # dt_fn = "../data/ade20k_val_predictions.json"
+    gt_fn = "../data/ade20k/annotations/instances_ade20k_val.json"
+    dt_fn = "../data/ade20k/predictions/maskrcnn_coco/amt/predictions.json"
     cocoGt = COCO(gt_fn)
     cocoDt = COCO(dt_fn)
     cocoGt = prepare(cocoGt)

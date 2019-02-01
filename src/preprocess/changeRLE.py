@@ -9,7 +9,7 @@ except:
     from itertools import izip_longest as zip_longest
 
 from pycocotools.coco import COCO
-from coco_format import save_ann_fn
+# from coco_format import save_ann_fn
 
 def maskToRLE(mask):
     h, w = mask.shape

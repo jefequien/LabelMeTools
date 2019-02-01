@@ -7,12 +7,18 @@ from dummy_datasets import get_ade_dataset
 from coco_format import *
 
 def make_annotations(ann_dir, im_list):
-    annotations = []
-    for imgId, im_name in enumerate(im_list):
-        print(imgId, im_name, len(annotations))
-        ann_path = os.path.join(ann_dir, im_name).replace('.jpg', '.png')
+    ins_dir = os.path.join(ann_dir, "instances")
 
+    annotations = []
+    for i, im_name in enumerate(im_list):
+        print(i, im_name, len(annotations))
+        
+        ann_path = os.path.join(ins_dir, im_name).replace('.jpg', '.png')
         ann_image = cv2.imread(ann_path)
+        if ann_image is None:
+            print("Skipping", ann_path)
+            continue
+        
         crowd_mask = ann_image[:,:,0]
         ins_mask = ann_image[:,:,1]
         cat_mask = ann_image[:,:,2]
@@ -24,9 +30,10 @@ def make_annotations(ann_dir, im_list):
             cat = np.sum(cat_mask[mask]) / np.sum(mask)
             crowd = np.max(crowd_mask[mask])
             
-            ann = make_ann(mask, cat, iscrowd=crowd)
-            ann["image_id"] = imgId
-            ann["id"] = len(annotations)
+            ann = make_ann(mask, iscrowd=crowd)
+            ann["image_id"] = i + 1
+            ann["category_id"] = int(cat)
+            ann["id"] = len(annotations) + 1
             annotations.append(ann)
     return annotations
 
@@ -36,24 +43,23 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--split', type=str, default="val")
     args = parser.parse_args()
 
-    im_dir = "../data/ade20k/images/"
-    ann_dir = "../data/ade20k/annotations/instances"
-    cat_list = get_ade_dataset()
-    im_list = []
+    data_dir = "../data/ade20k"
+    im_dir = os.path.join(data_dir, "images")
+    ann_dir = os.path.join(data_dir, "annotations")
 
-    if args.split == "train":
-        im_list = os.path.join(im_dir, "training.txt")
-    elif args.split == "val":
-        im_list = os.path.join(im_dir, "validation.txt")
-
+    # Load im_list
+    im_list = os.path.join(data_dir, "{}.txt".format(args.split))
     with open(im_list,'r') as f:
         im_list = f.read().splitlines()
 
+    # Load cat_list
+    cat_list = get_ade_dataset()
+
+    annotations = make_annotations(ann_dir, im_list)
     images = make_images(im_list, im_dir)
     categories = make_categories(cat_list)
-    annotations = make_annotations(ann_dir, im_list)
 
-    out_file = os.path.join(ann_dir, "instances_ade20k_{}.json".format(args.split))
+    out_file = os.path.join(ann_dir, "instances_{}.json".format(args.split))
     save_ann_fn(images, annotations, categories, out_file)
 
 

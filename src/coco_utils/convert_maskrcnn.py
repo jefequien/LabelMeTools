@@ -32,54 +32,61 @@ def convert_from_cls_format(cls_boxes, cls_segms, cls_keyps):
 
 def make_annotations(detections, im_list):
     annotations = []
-    for imgId, im_name in enumerate(im_list):
-        print(imgId, im_name, len(annotations))
+    for i, im_name in enumerate(im_list):
+        print(i, im_name, len(annotations))
 
         cls_boxes, cls_segms, cls_keyps = detections[im_name]
         boxes, segms, keypoints, classes = convert_from_cls_format(cls_boxes, cls_segms, cls_keyps)
         if segms is None:
             continue
 
-        for i in range(len(segms)):
-            segm = segms[i]
-            score = boxes[i, -1]
-            cat = classes[i]
+        for j in range(len(segms)):
+            segm = segms[j]
+            score = boxes[j, -1]
+            cat = classes[j]
 
             mask = COCOmask.decode(segm)
 
-            ann = make_ann(mask, cat)
-            ann["image_id"] = imgId
-            ann["id"] = len(annotations)
+            ann = make_ann(mask)
+            ann["image_id"] = i + 1
+            ann["category_id"] = int(cat)
+            ann["id"] = len(annotations) + 1
             ann["score"] = float(score)
             annotations.append(ann)
-
     return annotations
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--im_dir', type=str, default="../data/ade20k/images/")
-    parser.add_argument('-l', '--im_list', type=str, default="../data/ade20k/images/validation.txt")
+    parser.add_argument('-d', '--dataset', type=str, default="ade20k")
+    parser.add_argument('-s', '--split', type=str, default="val")
+    parser.add_argument('-p', '--pkl', type=str, required=True)
     parser.add_argument('-c', '--categories', type=str, default="coco")
-    parser.add_argument('-p', '--pkl', type=str, default=None)
     args = parser.parse_args()
 
+    data_dir = "../data/{}/".format(args.dataset)
+    im_dir = os.path.join(data_dir, "images")
+
+    # Load im_list
+    im_list = os.path.join(data_dir, "{}.txt".format(args.split))
+    if args.dataset == "places":
+        im_list = os.path.join(data_dir, "im_lists/{}.txt".format(args.split))
+    with open(im_list,'r') as f:
+        im_list = f.read().splitlines()
+
+    # Load cat_list
     cat_list = []
     if args.categories == "coco":
         cat_list = get_coco_dataset()
     elif args.categories == "ade":
         cat_list = get_ade_dataset()
 
-    im_list = []
-    with open(args.im_list,'r') as f:
-        im_list = f.read().splitlines()
-
     detections = None
     with open(args.pkl, 'rb') as f:
         detections = pickle.load(f)
 
-    images = make_images(im_list, args.im_dir)
-    categories = make_categories(cat_list)
     annotations = make_annotations(detections, im_list)
+    images = make_images(im_list, im_dir)
+    categories = make_categories(cat_list)
 
     out_dir = os.path.dirname(args.pkl)
     out_file = os.path.join(out_dir, "predictions.json")
