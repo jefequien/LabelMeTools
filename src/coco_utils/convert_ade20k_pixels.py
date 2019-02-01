@@ -41,7 +41,7 @@ if __name__ == "__main__":
     ann_dir = os.path.join(data_dir, "annotations")
 
     # Load im_list
-    im_list = os.path.join(data_dir, "{}.txt".format(args.split))
+    im_list = os.path.join(data_dir, "im_lists/{}.txt".format(args.split))
     with open(im_list,'r') as f:
         im_list = f.read().splitlines()
 
