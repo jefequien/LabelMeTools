@@ -90,18 +90,18 @@ if __name__ == "__main__":
     filenames = contents[0]
     folders = contents[1]
 
-    # Make categories
+    # Make cat_list
     cat_list = contents[2]
     cat_list.insert(0, "__background__")
-    categories = make_categories(cat_list)
 
     # Make im_list
     im_list = make_im_list(filenames, folders, args.split)
     im_list_renamed = ["{}/{}".format(im_name.split("/")[2], os.path.basename(im_name)) for im_name in im_list]
-    images = make_images(im_list_renamed, im_dir)
 
     # Make annotations
     annotations = make_annotations(ann_dir, im_list)
+    images = make_images(im_list_renamed, im_dir)
+    categories = make_categories(cat_list)
 
     out_file = os.path.join(ann_dir, "../full_{}.json".format(args.split))
     save_ann_fn(images, annotations, categories, out_file)
