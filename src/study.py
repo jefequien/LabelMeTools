@@ -7,7 +7,7 @@ from pycocotools.coco import COCO
 from pycocotools import mask as COCOmask
 from pycocotools.cocoeval import COCOeval
 
-# from coco_utils.coco_format import *
+from coco_utils.coco_format import *
 
 logger = logging.getLogger(__name__)
 
@@ -144,8 +144,8 @@ def _log_detection_eval_metrics(category_list, coco_eval):
 
 
 if __name__ == "__main__":
-    gt_fn = "../data/ade20k/annotations/instances_ade20k_val.json"
-    dt_fn = "../data/ade20k/predictions/maskrcnn_coco/amt/predictions.json"
+    gt_fn = "../../LabelMe-Lite/data/ade20k/instances_val.json"
+    dt_fn = "../../LabelMe-Lite/data/ade20k/maskrcnnc_val.json"
     cocoGt = COCO(gt_fn)
     cocoDt = COCO(dt_fn)
     
