@@ -29,7 +29,6 @@ def make_video(im_list, out_fn):
         out.write(img)
 
     out.release()
-    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
