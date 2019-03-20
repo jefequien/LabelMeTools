@@ -15,25 +15,6 @@ logger = logging.getLogger(__name__)
 def print_stats(coco):
     print("{} images, {} annotations".format(len(coco.dataset["images"]), len(coco.dataset["annotations"])))
 
-def correct_ann_size(coco):
-    for imgId in tqdm(coco.imgs):
-        img = coco.imgs[imgId]
-        h = img["height"]
-        w = img["width"]
-
-        annIds = coco.getAnnIds(imgIds=[imgId])
-        anns = coco.loadAnns(annIds)
-        for ann in anns:
-            segm = ann["segmentation"]
-            if segm["size"] != [h,w]:
-                mask = COCOmask.decode(segm)
-                new_mask = cv2.resize(mask, (w, h), cv2.INTER_NEAREST)
-                new_ann = make_ann(new_mask)
-
-                ann["segmentation"] = new_ann["segmentation"]
-                ann["area"] = new_ann["area"]
-                ann["bbox"] = new_ann["bbox"]
-
 def study(cocoGt, cocoDt):
     print_stats(cocoGt)
     print_stats(cocoDt)
