@@ -10,7 +10,7 @@ from pycocotools.cocoeval import COCOeval
 
 from coco_utils.coco_format import *
 
-def fix_coco(coco):
+def resize_annotations(coco):
     for imgId in tqdm(coco.imgs):
         img = coco.imgs[imgId]
         h = img["height"]
@@ -32,12 +32,12 @@ def fix_coco(coco):
 
 
 if __name__ == "__main__":
-    ann_fn = "../../LabelMe-Lite/data/ade20k/full_val.json"
+    ann_fn = "../../LabelMe-Lite/data/ade20k/full_val_ori.json"
     coco = COCO(ann_fn)
 
-    fix_coco(coco)
+    resize_annotations(coco)
 
-    out_file = "./iou_examples.json"
+    out_file = "./full_val.json"
     images = coco.dataset["images"]
     annotations = coco.dataset["annotations"]
     categories = coco.dataset["categories"]
