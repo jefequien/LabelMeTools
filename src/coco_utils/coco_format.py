@@ -16,9 +16,9 @@ def make_images(im_list, im_dir):
         img["id"] = i + 1
 
         im_path = os.path.join(im_dir, im_name)
-        im = cv2.imread(im_path)
-        img["height"] = im.shape[0]
-        img["width"] = im.shape[1]
+        # im = cv2.imread(im_path)
+        # img["height"] = im.shape[0]
+        # img["width"] = im.shape[1]
         
         images.append(img)
     return images

@@ -1,4 +1,5 @@
 import os
+import argparse
 import json
 import logging
 import numpy as np
@@ -9,6 +10,13 @@ from pycocotools import mask as COCOmask
 from pycocotools.cocoeval import COCOeval
 
 from coco_utils.coco_format import *
+
+def set_new_im_dir(coco, old_im_dir, new_im_dir):
+    for img in coco.imgs:
+        im_name = img["file_name"]
+        full_path = os.path.join(old_im_dir, im_name)
+        img["file_name"] = os.path.relpath(full_path, new_im_dir)
+
 
 def resize_annotations(coco):
     for imgId in tqdm(coco.imgs):
@@ -32,13 +40,24 @@ def resize_annotations(coco):
 
 
 if __name__ == "__main__":
-    ann_fn = "../../LabelMe-Lite/data/ade20k/full_val_ori.json"
-    coco = COCO(ann_fn)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--im_dir', type=str, help='Images directory')
+    parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')
+    parser.add_argument('-o', '--out_fn', type=str, default="../fixed_coco.json", help='Output coco file')
 
-    resize_annotations(coco)
+    parser.add_argument('--new_im_dir', type=str, help='New image directory')
+    args = parser.parse_args()
+    print(args)
 
-    out_file = "./full_val.json"
+    coco = COCO(args.ann_fn)
+
+    if args.new_im_dir:
+        set_new_im_dir(coco, args.im_dir, args.new_im_dir)
+
+    # resize_annotations(coco)
+
     images = coco.dataset["images"]
     annotations = coco.dataset["annotations"]
     categories = coco.dataset["categories"]
-    save_ann_fn(images, annotations, categories, out_file)
+    save_ann_fn(images, annotations, categories, args.out_fn)
+    
