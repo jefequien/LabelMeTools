@@ -3,14 +3,14 @@ import os
 import json
 import numpy as np
 import cv2
+from tqdm import tqdm
 
 from pycocotools import mask as COCOmask
 from pycocotools.coco import COCO
 
 def make_images(im_list, im_dir):
-    print("Opening images...")
     images = []
-    for i, im_name in enumerate(im_list):
+    for i, im_name in tqdm(enumerate(im_list)):
         img = {}
         img["file_name"] = im_name
         img["id"] = i + 1
@@ -43,35 +43,32 @@ def make_ann(mask, iscrowd=0):
     ann["iscrowd"] = int(iscrowd)
     return ann
 
-def save_ann_fn(images, annotations, categories, out_file):
+def save_ann_fn(images, annotations, categories, out_fn):
     ann_fn = {}
     ann_fn["images"] = images
     ann_fn["annotations"] = annotations
     ann_fn["categories"] = categories
 
-    if not os.path.exists(os.path.dirname(out_file)):
-        os.makedirs(os.path.dirname(out_file))
-        
-    with open(out_file, 'w') as f:
+    dirname = os.path.dirname(out_fn)
+    if dirname and not os.path.exists(dirname):
+        os.makedirs(dirname)
+    
+    with open(out_fn, 'w') as f:
             json.dump(ann_fn, f, indent=2)
 
-def open_coco(ann_fn):
+def print_ann_fn(ann_fn):
     coco = COCO(ann_fn)
-    print(len(coco.imgs), "images")
-    print(len(coco.anns), "annotations")
-    print(len(coco.cats), "categories")
-    for n, id in enumerate(coco.imgs):
-        print(coco.imgs[id])
-        if n > 10:
-            break
+    print("File name:", ann_fn)
+    print("Images:", len(coco.imgs))
+    print("Annotations:", len(coco.anns))
+    print("Categories:", len(coco.cats))
 
-    for n, id in enumerate(coco.anns):
-        print(coco.anns[id])
-        if n > 10:
-            break
-    for n, id in enumerate(coco.cats):
-        print(coco.cats[id])
-
+    counts = {}
+    for cat in coco.cats:
+        catName = coco.cats[cat]["name"]
+        annIds = coco.getAnnIds(catIds=[cat])
+        counts[catName] = len(annIds)
+    print("Counts:", counts)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
