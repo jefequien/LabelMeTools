@@ -12,7 +12,8 @@ from pycocotools.cocoeval import COCOeval
 from coco_utils.coco_format import *
 
 def set_new_im_dir(coco, old_im_dir, new_im_dir):
-    for img in coco.imgs:
+    for imgId in tqdm(coco.imgs):
+        img = coco.imgs[imgId]
         im_name = img["file_name"]
         full_path = os.path.join(old_im_dir, im_name)
         img["file_name"] = os.path.relpath(full_path, new_im_dir)
@@ -60,4 +61,3 @@ if __name__ == "__main__":
     annotations = coco.dataset["annotations"]
     categories = coco.dataset["categories"]
     save_ann_fn(images, annotations, categories, args.out_fn)
-    
