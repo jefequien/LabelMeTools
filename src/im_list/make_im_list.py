@@ -4,8 +4,11 @@ from tqdm import tqdm
 
 def make_im_list(im_dir, prefix):
     im_list = []
-    for root, dirs, files in tqdm(os.walk(im_dir)):
-        for file in files:
+    for root, dirs, files in os.walk(im_dir):
+        dirs.sort()
+        files.sort()
+        print(root)
+        for file in tqdm(files):
             name, ext = os.path.splitext(file)
             if ext == ".jpg" or ext == ".png":
                 file_name = os.path.join(root, file)
@@ -13,7 +16,7 @@ def make_im_list(im_dir, prefix):
                 im_list.append(im_name)
     return im_list
 
-def write_im_list(im_list, out_fn):
+def write_im_list(im_list, out_fn="im_list.txt"):
     out_str = "\n".join(im_list) + "\n"
     with open(out_fn, 'w') as f:
         f.write(out_str)
@@ -28,6 +31,5 @@ if __name__ == "__main__":
     print(args)
 
     im_list = make_im_list(args.im_dir, args.prefix)
-    out_fn = "im_list.txt"
-    write_im_list(im_list, out_fn)
+    write_im_list(im_list)
 
