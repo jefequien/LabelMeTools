@@ -42,19 +42,17 @@ def resize_annotations(coco):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--im_dir', type=str, help='Images directory')
     parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')
-    parser.add_argument('-o', '--out_fn', type=str, default="../fixed_coco.json", help='Output coco file')
 
-    parser.add_argument('--new_im_dir', type=str, help='New image directory')
+    parser.add_argument('-n', '--new_im_dir', type=str, help='New image directory')
+    parser.add_argument('-d', '--old_im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
     args = parser.parse_args()
     print(args)
 
     coco = COCO(args.ann_fn)
+    out_fn = args.ann_fn.replace(".json", "_fixed.json")
 
-    if args.new_im_dir:
-        set_new_im_dir(coco, args.im_dir, args.new_im_dir)
-
+    change_im_dir(coco, args.old_im_dir, args.new_im_dir)
     # resize_annotations(coco)
 
     images = coco.dataset["images"]

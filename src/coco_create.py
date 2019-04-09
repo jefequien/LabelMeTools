@@ -14,24 +14,17 @@ def load_json(file_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
-    parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')
-    parser.add_argument('-o', '--out_fn', type=str, default="../coco.json", help='Output coco file')
-
     parser.add_argument('-i', '--im_list', type=str, help='List of images')
     parser.add_argument('-a', '--ann_list', type=str, help='List of annotations. Typically the output of maskrcnn')
     parser.add_argument('-c', '--cat_list', type=str, help='List of categories')
+
+    parser.add_argument('-o', '--out_fn', type=str, default="../coco.json", help='Output coco file')
+    parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
     args = parser.parse_args()
     print(args)
 
-    coco = COCO(args.ann_fn)
-    if not args.ann_fn:
-        coco.dataset["images"] = []
-        coco.dataset["annotations"] = []
-        coco.dataset["categories"] = []
-
     # Make categories
-    categories = coco.dataset["categories"]
+    categories = []
     if args.cat_list:
         cat_list = []
         if args.cat_list == "coco":
@@ -52,7 +45,7 @@ if __name__ == "__main__":
         annotations = make_annotations(ann_list)
 
     # Make images
-    images = coco.dataset["images"]
+    images = []
     if args.im_list:
         im_list = read_list(args.im_list)
         images = make_images(im_list, args.im_dir)
