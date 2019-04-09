@@ -23,14 +23,21 @@ def split_im_list(im_list, n):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--im_list', type=str, help='List of images')
-    parser.add_argument('-n', '--num', type=int, help='Number of images to split per image list')
+    parser.add_argument('-s', '--split', type=int, help='Number of images to split per image list')
+    parser.add_argument('-r', '--randomize', action='store_true', help='Randomize list')
     args = parser.parse_args()
     print(args)
     
     im_list = read_list(args.im_list)
-    im_lists = split_im_list(im_list, args.num)
 
-    for i, im_list in tqdm(enumerate(im_lists)):
-        out_fn = args.im_list.replace(".txt", "{}.txt".format(i.zfill(3)))
+    if args.randomize:
+        random.seed(1)
+        random.shuffle(im_list)
+        out_fn = args.im_list.replace(".txt", "_random.txt")
         write_im_list(im_list, out_fn)
-        
+
+    if args.split:
+        im_lists = split_im_list(im_list, args.split)
+        for i, im_list in tqdm(enumerate(im_lists)):
+            out_fn = args.im_list.replace(".txt", "{}.txt".format(i.zfill(3)))
+            write_im_list(im_list, out_fn)
