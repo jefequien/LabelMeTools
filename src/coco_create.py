@@ -18,7 +18,6 @@ if __name__ == "__main__":
     parser.add_argument('-a', '--ann_list', type=str, help='List of annotations. Typically the output of maskrcnn')
     parser.add_argument('-c', '--cat_list', type=str, help='List of categories')
 
-    parser.add_argument('-o', '--out_fn', type=str, default="../coco.json", help='Output coco file')
     parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
     args = parser.parse_args()
     print(args)
@@ -39,7 +38,7 @@ if __name__ == "__main__":
         categories = make_categories(cat_list)
 
     # Make annotations
-    annotations = coco.dataset["annotations"]
+    annotations = []
     if args.ann_list:
         ann_list = load_json(args.ann_list)
         annotations = make_annotations(ann_list)
@@ -50,5 +49,6 @@ if __name__ == "__main__":
         im_list = read_list(args.im_list)
         images = make_images(im_list, args.im_dir)
 
-    save_ann_fn(images, annotations, categories, args.out_fn)
-    print_ann_fn(args.out_fn)
+    out_fn = args.im_list.replace(".txt", ".json")
+    save_ann_fn(images, annotations, categories, out_fn)
+    print_ann_fn(out_fn)

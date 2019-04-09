@@ -10,10 +10,10 @@ from pycocotools.coco import COCO
 
 def make_images(im_list, im_dir):
     images = []
-    for i, im_name in tqdm(enumerate(im_list)):
+    for im_name in tqdm(im_list):
         img = {}
         img["file_name"] = im_name
-        img["id"] = i + 1
+        img["id"] = len(images) + 1
 
         im_path = os.path.join(im_dir, im_name)
         im = cv2.imread(im_path)
@@ -26,15 +26,15 @@ def make_images(im_list, im_dir):
 def make_categories(cat_list):
     categories = []
     cat_list.remove("__background__")
-    for i, name in enumerate(cat_list):
-        categories.append({"id": i + 1, "name": name})
+    for name in cat_list:
+        categories.append({"id": len(categories) + 1, "name": name})
     return categories
 
 def make_annotations(ann_list):
     annotations = []
-    for i, a in tqdm(enumerate(ann_list)):
+    for a in tqdm(ann_list):
         ann = {}
-        ann["id"] = i + 1
+        ann["id"] = len(annotations) + 1
         ann["category_id"] = a["category_id"]
         ann["image_id"] = a["image_id"]
         ann["iscrowd"] = 0

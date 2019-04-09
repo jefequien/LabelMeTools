@@ -34,10 +34,10 @@ if __name__ == "__main__":
         random.seed(1)
         random.shuffle(im_list)
         out_fn = args.im_list.replace(".txt", "_random.txt")
-        write_im_list(im_list, out_fn)
+        write_list(im_list, out_fn)
 
     if args.split:
         im_lists = split_im_list(im_list, args.split)
         for i, im_list in tqdm(enumerate(im_lists)):
-            out_fn = args.im_list.replace(".txt", "{}.txt".format(i.zfill(3)))
-            write_im_list(im_list, out_fn)
+            out_fn = args.im_list.replace(".txt", "{}.txt".format(str(i).zfill(2)))
+            write_list(im_list, out_fn)
