@@ -11,33 +11,12 @@ from pycocotools.cocoeval import COCOeval
 
 from coco_utils.coco_format import *
 
-def set_new_im_dir(coco, old_im_dir, new_im_dir):
+def change_im_dir(coco, old_im_dir, new_im_dir):
     for imgId in tqdm(coco.imgs):
         img = coco.imgs[imgId]
         im_name = img["file_name"]
         full_path = os.path.join(old_im_dir, im_name)
         img["file_name"] = os.path.relpath(full_path, new_im_dir)
-
-
-def resize_annotations(coco):
-    for imgId in tqdm(coco.imgs):
-        img = coco.imgs[imgId]
-        h = img["height"]
-        w = img["width"]
-
-        annIds = coco.getAnnIds(imgIds=[imgId])
-        anns = coco.loadAnns(annIds)
-        for ann in anns:
-            segm = ann["segmentation"]
-            if segm["size"] != [h,w]:
-                mask = COCOmask.decode(segm)
-                new_mask = cv2.resize(mask, (w, h), cv2.INTER_NEAREST)
-                new_ann = make_ann(new_mask)
-
-                ann["segmentation"] = new_ann["segmentation"]
-                ann["area"] = new_ann["area"]
-                ann["bbox"] = new_ann["bbox"]
-
 
 
 if __name__ == "__main__":
@@ -53,7 +32,6 @@ if __name__ == "__main__":
     out_fn = args.ann_fn.replace(".json", "_fixed.json")
 
     change_im_dir(coco, args.old_im_dir, args.new_im_dir)
-    # resize_annotations(coco)
 
     images = coco.dataset["images"]
     annotations = coco.dataset["annotations"]

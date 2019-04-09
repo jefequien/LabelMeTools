@@ -50,6 +50,25 @@ def make_im_list(filenames, folders, split):
             im_list.append(im_path)
     return im_list
 
+def correct_annotation_sizes(coco):
+    for imgId in tqdm(coco.imgs):
+        img = coco.imgs[imgId]
+        h = img["height"]
+        w = img["width"]
+
+        annIds = coco.getAnnIds(imgIds=[imgId])
+        anns = coco.loadAnns(annIds)
+        for ann in anns:
+            segm = ann["segmentation"]
+            if segm["size"] != [h,w]:
+                mask = COCOmask.decode(segm)
+                new_mask = cv2.resize(mask, (w, h), cv2.INTER_NEAREST)
+                new_ann = make_ann(new_mask)
+
+                ann["segmentation"] = new_ann["segmentation"]
+                ann["area"] = new_ann["area"]
+                ann["bbox"] = new_ann["bbox"]
+
 def open_mat_file(ann_dir):
     mat_file = os.path.join(ann_dir, "ADE20K_2016_07_26/index_ade20k.mat")
     mat_contents = loadmat(mat_file, squeeze_me=True)["index"]
@@ -99,12 +118,20 @@ if __name__ == "__main__":
     im_list_renamed = ["{}/{}".format(im_name.split("/")[2], os.path.basename(im_name)) for im_name in im_list]
 
     # Make annotations
-    annotations = make_annotations(ann_dir, im_list)
     images = make_images(im_list_renamed, im_dir)
+    annotations = make_annotations(ann_dir, im_list)
     categories = make_categories(cat_list)
+    out_fn = os.path.join(ann_dir, "../full_{}_wrong_size.json".format(args.split))
+    save_ann_fn(images, annotations, categories, out_fn)
+    print_ann_fn(out_fn)
 
-    out_file = os.path.join(ann_dir, "../full_{}.json".format(args.split))
-    save_ann_fn(images, annotations, categories, out_file)
-
-
+    # Correct annotation sizes
+    coco = COCO(out_fn)
+    correct_annotation_sizes(coco)
+    images = coco.dataset["images"]
+    annotations = coco.dataset["annotations"]
+    categories = coco.dataset["categories"]
+    out_fn = os.path.join(ann_dir, "../full_{}.json".format(args.split))
+    save_ann_fn(images, annotations, categories, out_fn)
+    print_ann_fn(out_fn)
 
