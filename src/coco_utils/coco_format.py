@@ -16,9 +16,9 @@ def make_images(im_list, im_dir):
         img["id"] = i + 1
 
         im_path = os.path.join(im_dir, im_name)
-        # im = cv2.imread(im_path)
-        # img["height"] = im.shape[0]
-        # img["width"] = im.shape[1]
+        im = cv2.imread(im_path)
+        img["height"] = im.shape[0]
+        img["width"] = im.shape[1]
         
         images.append(img)
     return images
@@ -29,6 +29,24 @@ def make_categories(cat_list):
     for i, name in enumerate(cat_list):
         categories.append({"id": i + 1, "name": name})
     return categories
+
+def make_annotations(ann_list):
+    annotations = []
+    for i, a in tqdm(enumerate(ann_list)):
+        ann = {}
+        ann["id"] = i + 1
+        ann["category_id"] = a["category_id"]
+        ann["image_id"] = a["image_id"]
+        ann["iscrowd"] = 0
+        if "score" in a:
+            ann["score"] = a["score"]
+
+        segm = a["segmentation"]
+        ann["segmentation"] = segm
+        ann["area"] = int(COCOmask.area(segm))
+        ann["bbox"] = list(COCOmask.toBbox(segm))
+        annotations.append(ann)
+    return annotations
 
 def make_ann(mask, iscrowd=0):
     mask = np.asfortranarray(mask)
@@ -72,7 +90,7 @@ def print_ann_fn(ann_fn):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input-file', type=str)
+    parser.add_argument('-f', '--ann_fn', type=str)
     args = parser.parse_args()
 
-    open_coco(args.input_file)
+    print_ann_fn(args.ann_fn)

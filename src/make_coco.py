@@ -6,13 +6,15 @@ from coco_utils.dummy_datasets import *
 
 def read_list(file_name):
     with open(file_name, 'r') as f:
-        lines = f.read().splitlines()
-        return lines
+        return f.read().splitlines()
 
+def load_json(file_name):
+    with open(file_name, 'r') as f:
+        return json.load(f)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--im_dir', type=str, help='Images directory')
+    parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
     parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')
     parser.add_argument('-o', '--out_fn', type=str, default="../coco.json", help='Output coco file')
 
@@ -46,7 +48,8 @@ if __name__ == "__main__":
     # Make annotations
     annotations = coco.dataset["annotations"]
     if args.ann_list:
-        annotations = json.load(args.annotations)
+        ann_list = load_json(args.ann_list)
+        annotations = make_annotations(ann_list)
 
     # Make images
     images = coco.dataset["images"]

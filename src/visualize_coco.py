@@ -29,7 +29,7 @@ def vis_mask(img, mask, color=_GREEN, alpha=0.4, show_border=True, border_thick=
     idx = np.nonzero(mask)
 
     img[idx[0], idx[1], :] *= 1.0 - alpha
-    img[idx[0], idx[1], :] += alpha * col
+    img[idx[0], idx[1], :] += alpha * np.array(color)
 
     if show_border:
         _, contours, _ = cv2.findContours(
@@ -64,12 +64,13 @@ def vis_bbox(img, bbox, thick=1, color=_GREEN):
     cv2.rectangle(img, (x0, y0), (x1, y1), color, thickness=thick)
     return img
 
-def vis_image(coco, image, anns):
+def vis_image(coco, img, anns):
     for ann in anns:
-        bbox = ann["bbox"]
         name = coco.cats[ann["category_id"]]["name"]
         mask = COCOmask.decode(ann["segmentation"])
+        bbox = COCOmask.toBbox(ann["segmentation"])
         color = get_color(name)
+        print(name, ann)
 
         img = vis_bbox(img, bbox, color=color)
         img = vis_class(img, (bbox[0], bbox[1] - 2), name, color=color)
@@ -77,20 +78,24 @@ def vis_image(coco, image, anns):
     return img
 
 def vis_coco(coco, im_dir, out_dir):
-    for img in tqdm(coco.imgs):
+    for imgId in tqdm(coco.imgs):
+        im = coco.imgs[imgId]
+        print(im)
         im_name = im["file_name"]
         img_fn = os.path.join(im_dir, im_name)
         out_fn = os.path.join(out_dir, im_name)
         if not os.path.exists(os.path.dirname(out_fn)):
             os.makedirs(os.path.dirname(out_fn))
 
-        annIds = coco.getAnnIds(imgIds=[img['id']])
-        anns = coco.loadAnns(annIds=annIds)
+        annIds = coco.getAnnIds(imgIds=[imgId])
+        anns = coco.loadAnns(annIds)
 
         # Visualize annotations
         img = cv2.imread(img_fn)
         img = vis_image(coco, img, anns)
         cv2.imwrite(out_fn, img)
+        if imgId == 2:
+            break
 
 
 if __name__ == "__main__":
@@ -101,6 +106,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
 
-    coco = COCO(ann_fn)
+    coco = COCO(args.ann_fn)
     vis_coco(coco, args.im_dir, args.out_dir)
 
