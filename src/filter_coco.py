@@ -10,7 +10,7 @@ def read_list(file_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--im_dir', type=str, help='Images directory')
+    parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
     parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')
     parser.add_argument('-o', '--out_fn', type=str, default="../coco.json", help='Output coco file')
 
