@@ -70,7 +70,6 @@ def vis_image(coco, img, anns):
         mask = COCOmask.decode(ann["segmentation"])
         bbox = COCOmask.toBbox(ann["segmentation"])
         color = get_color(name)
-        print(name, ann)
 
         img = vis_bbox(img, bbox, color=color)
         img = vis_class(img, (bbox[0], bbox[1] - 2), name, color=color)
@@ -80,7 +79,6 @@ def vis_image(coco, img, anns):
 def vis_coco(coco, im_dir, out_dir):
     for imgId in tqdm(coco.imgs):
         im = coco.imgs[imgId]
-        print(im)
         im_name = im["file_name"]
         img_fn = os.path.join(im_dir, im_name)
         out_fn = os.path.join(out_dir, im_name)
@@ -94,8 +92,6 @@ def vis_coco(coco, im_dir, out_dir):
         img = cv2.imread(img_fn)
         img = vis_image(coco, img, anns)
         cv2.imwrite(out_fn, img)
-        if imgId == 2:
-            break
 
 
 if __name__ == "__main__":
