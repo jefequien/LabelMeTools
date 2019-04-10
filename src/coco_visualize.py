@@ -114,6 +114,9 @@ if __name__ == "__main__":
         args.out_dir = args.ann_fn.replace(".json", "")
     print(args)
 
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir)
+
     coco = COCO(args.ann_fn)
     vis_coco(coco, args.im_dir, args.out_dir)
 
