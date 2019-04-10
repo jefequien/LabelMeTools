@@ -53,4 +53,4 @@ if __name__ == "__main__":
         images = make_images(im_list, args.im_dir)
 
     save_ann_fn(images, annotations, categories, args.out_fn)
-    print_ann_fn(out_fn)
+    print_ann_fn(args.out_fn)

@@ -29,4 +29,4 @@ if __name__ == "__main__":
     annotations = make_annotations(ann_list)
     categories = coco.dataset["categories"]
     save_ann_fn(images, annotations, categories, args.out_fn)
-    print_ann_fn(out_fn)
+    print_ann_fn(args.out_fn)

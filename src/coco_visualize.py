@@ -98,7 +98,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
     parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')
-    parser.add_argument('-o', '--out_dir', type=str, help='Output visualization directory')
+    parser.add_argument('-o', '--out_dir', type=str, default=None, help='Output visualization directory')
     args = parser.parse_args()
     if args.out_dir == None:
         args.out_dir = args.ann_fn.replace(".json", "")

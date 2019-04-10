@@ -12,12 +12,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')
     parser.add_argument('-i', '--im_list', type=str, help='List of images')
+    parser.add_argument('-o', '--out_fn', type=str, default=None, help='Output coco file')
     args = parser.parse_args()
+    if not args.out_fn:
+        args.out_fn = args.ann_fn.replace(".json", "_filtered.json")
     print(args)
 
     coco = COCO(args.ann_fn)
     im_list = set(read_list(args.im_list))
-    out_fn = args.ann_fn.replace(".json", "_filtered.json")
 
     filtered_images = []
     filtered_annotations = []
@@ -31,5 +33,5 @@ if __name__ == "__main__":
     images = filtered_images
     annotations = filtered_annotations
     categories = coco.dataset["categories"]
-    save_ann_fn(images, annotations, categories, out_fn)
+    save_ann_fn(images, annotations, categories, args.out_fn)
     print_ann_fn(args.out_fn)
