@@ -19,7 +19,10 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--cat_list', type=str, help='List of categories')
 
     parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
+    parser.add_argument('-o', '--out_fn', type=str, default=None, help='Output coco file')
     args = parser.parse_args()
+    if not args.out_fn:
+        args.out_fn = args.im_list.replace(".txt", ".json")
     print(args)
 
     # Make categories
@@ -49,6 +52,5 @@ if __name__ == "__main__":
         im_list = read_list(args.im_list)
         images = make_images(im_list, args.im_dir)
 
-    out_fn = args.im_list.replace(".txt", ".json")
-    save_ann_fn(images, annotations, categories, out_fn)
+    save_ann_fn(images, annotations, categories, args.out_fn)
     print_ann_fn(out_fn)
