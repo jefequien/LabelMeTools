@@ -77,28 +77,35 @@ def vis_image(coco, img, anns):
     return img
 
 def vis_coco(coco, im_dir, out_dir):
-    for imgId in tqdm(coco.imgs):
-        im = coco.imgs[imgId]
-        im_name = im["file_name"]
-        img_fn = os.path.join(im_dir, im_name)
-        out_fn = os.path.join(out_dir, im_name)
-        if not os.path.exists(os.path.dirname(out_fn)):
-            os.makedirs(os.path.dirname(out_fn))
+    html_fn = os.path.join(out_dir, "__visualized__.html")
+    with open(html_fn, "w") as f:
 
-        annIds = coco.getAnnIds(imgIds=[imgId])
-        anns = coco.loadAnns(annIds)
+        # Visualize images
+        for imgId in tqdm(coco.imgs):
+            im = coco.imgs[imgId]
+            im_name = im["file_name"]
+            img_fn = os.path.join(im_dir, im_name)
+            out_fn = os.path.join(out_dir, im_name)
+            if not os.path.exists(os.path.dirname(out_fn)):
+                os.makedirs(os.path.dirname(out_fn))
 
-        # Visualize annotations
-        img = cv2.imread(img_fn)
-        img = vis_image(coco, img, anns)
-        cv2.imwrite(out_fn, img)
+            annIds = coco.getAnnIds(imgIds=[imgId])
+            anns = coco.loadAnns(annIds)
 
+            # Visualize annotations
+            img = cv2.imread(img_fn)
+            img = vis_image(coco, img, anns)
+            cv2.imwrite(out_fn, img)
+
+            # Add to html
+            tag = "<img src=\"" + im_name +"\" height=\"300\">"
+            f.write(tag + "\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
     parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')
     parser.add_argument('-o', '--out_dir', type=str, default=None, help='Output visualization directory')
+    parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
     args = parser.parse_args()
     if args.out_dir == None:
         args.out_dir = args.ann_fn.replace(".json", "")
