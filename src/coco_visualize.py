@@ -71,13 +71,16 @@ def vis_image(coco, img, anns):
         bbox = COCOmask.toBbox(ann["segmentation"])
         color = get_color(name)
 
+        if "score" in ann:
+            name += " %.2f" % ann["score"]
+
         img = vis_bbox(img, bbox, color=color)
         img = vis_class(img, (bbox[0], bbox[1] - 2), name, color=color)
         img = vis_mask(img, mask, color=color)
     return img
 
 def vis_coco(coco, im_dir, out_dir):
-    html_fn = os.path.join(out_dir, "__visualized__.html")
+    html_fn = os.path.join(out_dir, "all_images.html")
     with open(html_fn, "w") as f:
 
         # Visualize images
