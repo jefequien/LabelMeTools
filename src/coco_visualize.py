@@ -23,7 +23,7 @@ def get_color(name):
         COLOR_MAP[name] = (b,g,r)
     return COLOR_MAP[name]
 
-def vis_mask(img, mask, color=_GREEN, alpha=0.4, show_border=True, border_thick=1):
+def vis_mask(img, mask, alpha=0.4, show_border=True, border_thick=1, color=_GREEN):
     """Visualizes a single binary mask."""
     img = img.astype(np.float32)
     idx = np.nonzero(mask)
@@ -64,19 +64,50 @@ def vis_bbox(img, bbox, thick=1, color=_GREEN):
     cv2.rectangle(img, (x0, y0), (x1, y1), color, thickness=thick)
     return img
 
+def vis_keypoints(img, keypoints, skeleton, radius=3, thick=2, color=_WHITE):
+    """Visualizes keypoints."""
+    img = img.astype(np.uint8)
+
+    kps = {}
+    # Draw keypoints
+    num_keypoints = int(len(keypoints) / 3)
+    for i in range(num_keypoints):
+        x,y,v = keypoints[3*i], keypoints[3*i+1], keypoints[3*i+2]
+        if v != 0:
+            cv2.circle(img, (x,y), radius, color, thickness=-1)
+            kps[i+1] = (x,y)
+    # Draw skeleton
+    for l in skeleton:
+        if l[0] in kps and l[1] in kps:
+            cv2.line(img, kps[l[0]], kps[l[1]], color, thickness=thick)
+    return img
+
 def vis_image(coco, img, anns):
     for ann in anns:
-        name = coco.cats[ann["category_id"]]["name"]
-        mask = COCOmask.decode(ann["segmentation"])
-        bbox = COCOmask.toBbox(ann["segmentation"])
+        cat = coco.cats[ann["category_id"]]
+        name = cat["name"]
         color = get_color(name)
 
+        # Visualize mask
+        if "segmentation" in ann:
+            mask = coco.annToMask(ann)
+            img = vis_mask(img, mask, color=color)
+
+        # Visualize bbox
+        if "bbox" in ann:
+            bbox = ann["bbox"]
+            img = vis_bbox(img, bbox, color=color)
+
+        # Visualize class name
         if "score" in ann:
             name += " %.2f" % ann["score"]
-
-        img = vis_bbox(img, bbox, color=color)
         img = vis_class(img, (bbox[0], bbox[1] - 2), name, color=color)
-        img = vis_mask(img, mask, color=color)
+
+        # Visualize keypoints
+        if "keypoints" in ann:
+            keypoints = ann["keypoints"]
+            skeleton = cat["skeleton"]
+            img = vis_keypoints(img, keypoints, skeleton)
     return img
 
 def vis_coco(coco, im_dir, out_dir):
@@ -97,6 +128,9 @@ def vis_coco(coco, im_dir, out_dir):
 
             # Visualize annotations
             img = cv2.imread(img_fn)
+            if img == None:
+                print("Warning: Could not find ", img_fn)
+                img = np.zeros((im["height"], im["width"], 3))
             img = vis_image(coco, img, anns)
             cv2.imwrite(out_fn, img)
 
