@@ -128,7 +128,7 @@ def vis_coco(coco, im_dir, out_dir):
 
             # Visualize annotations
             img = cv2.imread(img_fn)
-            if img == None:
+            if img is None:
                 print("Warning: Could not find ", img_fn)
                 img = np.zeros((im["height"], im["width"], 3))
             img = vis_image(coco, img, anns)
