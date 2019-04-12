@@ -30,8 +30,7 @@ class SimulatedAnnotator:
             self.nameToCat[cat["name"]] = cat
 
     def annotate(self, cocoDt):
-        passed_annotations = []
-
+        passed = []
         for dt_imgId in tqdm(cocoDt.imgs):
             dt_img = coco.imgs[dt_imgId]
             dt_annIds = coco.getAnnIds(imgIds=[dt_imgId])
@@ -40,8 +39,9 @@ class SimulatedAnnotator:
                 dt_cat = cocoDt.cats[dt_ann["category_id"]]
                 dts = [dt_ann["segmentation"]]
 
-                gt_cat = self.nameToCat[dt_cat["name"]]
+                # Filter by imgId and catId
                 gt_img = self.filenameToImg[dt_img["file_name"]]
+                gt_cat = self.nameToCat[dt_cat["name"]]
                 gt_annIds = self.cocoGt.getAnnIds(imgIds=[gt_img["id"]], catIds=[gt_cat["id"]])
                 gt_anns = self.cocoGt.loadAnns(gt_annIds)
                 gts = [ann["segmentation"] for ann in gt_anns]
@@ -51,12 +51,13 @@ class SimulatedAnnotator:
                 iscrowds = [0 for _ in gts]
                 ious = COCOmask.iou(dts, gts, iscrowds)
 
+                # Check if max iou is greater than threshold
                 max_dt_ious = np.max(ious, axis=1)
                 max_dt_gtIds = np.argmax(ious, axis=1)
-                for dt_ann, max_dt_iou, max_dt_gtId in zip(dt_anns, max_dt_ious, max_dt_gtIds):
+                for max_dt_iou, max_dt_gtId in zip(max_dt_ious, max_dt_gtIds):
                     if max_dt_iou >= self.thresholdIOU:
-                        passed_annotations.append(dt_ann)
-        return passed_annotations
+                        passed.append(dt_ann)
+        return passed
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

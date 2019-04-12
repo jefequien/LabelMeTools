@@ -72,7 +72,7 @@ def save_ann_fn(images, annotations, categories, out_fn):
         os.makedirs(dirname)
     
     with open(out_fn, 'w') as f:
-            json.dump(ann_fn, f, indent=2)
+        json.dump(ann_fn, f, indent=2)
 
 def print_ann_fn(ann_fn):
     coco = COCO(ann_fn)
@@ -82,9 +82,9 @@ def print_ann_fn(ann_fn):
     print("Categories:", len(coco.cats))
 
     counts = {}
-    for cat in coco.cats:
+    for catId in coco.cats:
         catName = coco.cats[cat]["name"]
-        annIds = coco.getAnnIds(catIds=[cat])
+        annIds = coco.getAnnIds(catIds=[catId])
         counts[catName] = len(annIds)
     print("Counts:", counts)
 
