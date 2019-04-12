@@ -83,7 +83,7 @@ def print_ann_fn(ann_fn):
 
     counts = {}
     for catId in coco.cats:
-        catName = coco.cats[cat]["name"]
+        catName = coco.cats[catId]["name"]
         annIds = coco.getAnnIds(catIds=[catId])
         counts[catName] = len(annIds)
     print("Counts:", counts)

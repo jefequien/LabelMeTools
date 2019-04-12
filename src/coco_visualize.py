@@ -88,20 +88,24 @@ def vis_image(coco, img, anns):
         name = cat["name"]
         color = get_color(name)
 
-        # Visualize mask
-        if "segmentation" in ann:
-            mask = coco.annToMask(ann)
-            img = vis_mask(img, mask, color=color)
-
         # Visualize bbox
         if "bbox" in ann:
             bbox = ann["bbox"]
-            img = vis_bbox(img, bbox, color=color)
+        elif "segmentation" in ann:
+            bbox = COCOmask.toBbox(ann["segmentation"])
+        else:
+            bbox = [0,0,0,0]
+        img = vis_bbox(img, bbox, color=color)
 
         # Visualize class name
         if "score" in ann:
             name += " %.2f" % ann["score"]
         img = vis_class(img, (bbox[0], bbox[1] - 2), name, color=color)
+
+        # Visualize mask
+        if "segmentation" in ann:
+            mask = coco.annToMask(ann)
+            img = vis_mask(img, mask, color=color)
 
         # Visualize keypoints
         if "keypoints" in ann:
