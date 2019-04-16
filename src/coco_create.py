@@ -4,14 +4,6 @@ import argparse
 from coco_utils.coco_format import *
 from coco_utils.dummy_datasets import *
 
-def read_list(file_name):
-    with open(file_name, 'r') as f:
-        return f.read().splitlines()
-
-def load_json(file_name):
-    with open(file_name, 'r') as f:
-        return json.load(f)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--im_list', type=str, help='List of images')
@@ -43,7 +35,7 @@ if __name__ == "__main__":
     # Make annotations
     annotations = []
     if args.ann_list:
-        ann_list = load_json(args.ann_list)
+        ann_list = read_json(args.ann_list)
         annotations = make_annotations(ann_list)
 
     # Make images

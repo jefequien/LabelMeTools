@@ -6,7 +6,7 @@ import cv2
 from dummy_datasets import get_ade_dataset
 from coco_format import *
 
-def make_annotations(ann_dir, im_list):
+def make_ade20k_annotations(ann_dir, im_list):
     ins_dir = os.path.join(ann_dir, "instances")
 
     annotations = []
@@ -48,18 +48,18 @@ if __name__ == "__main__":
     ann_dir = os.path.join(data_dir, "annotations")
 
     # Load im_list
-    im_list = os.path.join(data_dir, "im_lists/{}.txt".format(args.split))
-    with open(im_list,'r') as f:
-        im_list = f.read().splitlines()
+    im_list_fn = os.path.join(data_dir, "im_lists/{}.txt".format(args.split))
+    im_list = read_list(im_list_fn)
 
     # Load cat_list
     cat_list = get_ade_dataset()
 
-    annotations = make_annotations(ann_dir, im_list)
+    annotations = make_ade20k_annotations(ann_dir, im_list)
     images = make_images(im_list, im_dir)
     categories = make_categories(cat_list)
 
-    out_file = os.path.join(ann_dir, "instances_{}.json".format(args.split))
-    save_ann_fn(images, annotations, categories, out_file)
+    out_fn = os.path.join(ann_dir, "instances_{}.json".format(args.split))
+    save_ann_fn(images, annotations, categories, out_fn)
+    print_ann_fn(out_fn)
 
 

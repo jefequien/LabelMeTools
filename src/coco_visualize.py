@@ -64,22 +64,23 @@ def vis_bbox(img, bbox, thick=1, color=_GREEN):
     cv2.rectangle(img, (x0, y0), (x1, y1), color, thickness=thick)
     return img
 
-def vis_keypoints(img, keypoints, skeleton, radius=3, thick=2, color=_WHITE):
+def vis_keypoints(img, keypoints, skeleton, radius=4, thick=2, color=_WHITE):
     """Visualizes keypoints."""
     img = img.astype(np.uint8)
 
-    kps = {}
+    keypoints = np.array(keypoints).reshape(-1, 3)
+    visible_kps = {}
+
     # Draw keypoints
-    num_keypoints = int(len(keypoints) / 3)
-    for i in range(num_keypoints):
-        x,y,v = keypoints[3*i], keypoints[3*i+1], keypoints[3*i+2]
+    for i, kp in enumerate(keypoints):
+        x,y,v = kp
         if v != 0:
-            cv2.circle(img, (x,y), radius, color, thickness=-1)
-            kps[i+1] = (x,y)
+            cv2.circle(img, (int(x), int(y)), radius, color, thickness=-1)
+            visible_kps[i+1] = (x,y)
     # Draw skeleton
     for l in skeleton:
-        if l[0] in kps and l[1] in kps:
-            cv2.line(img, kps[l[0]], kps[l[1]], color, thickness=thick)
+        if l[0] in visible_kps and l[1] in visible_kps:
+            cv2.line(img, visible_kps[l[0]], visible_kps[l[1]], color, thickness=thick)
     return img
 
 def vis_image(coco, img, anns):
@@ -115,30 +116,32 @@ def vis_image(coco, img, anns):
     return img
 
 def vis_coco(coco, im_dir, out_dir):
+    # Prepare html
     html_fn = os.path.join(out_dir, "all_images.html")
-    with open(html_fn, "w") as f:
+    open(html_fn, 'w').close()
 
-        # Visualize images
-        for imgId in tqdm(coco.imgs):
-            im = coco.imgs[imgId]
-            im_name = im["file_name"]
-            img_fn = os.path.join(im_dir, im_name)
-            out_fn = os.path.join(out_dir, im_name)
-            if not os.path.exists(os.path.dirname(out_fn)):
-                os.makedirs(os.path.dirname(out_fn))
+    # Visualize images
+    for imgId in tqdm(coco.imgs):
+        im = coco.imgs[imgId]
+        im_name = im["file_name"]
+        img_fn = os.path.join(im_dir, im_name)
+        out_fn = os.path.join(out_dir, im_name)
+        if not os.path.exists(os.path.dirname(out_fn)):
+            os.makedirs(os.path.dirname(out_fn))
 
-            annIds = coco.getAnnIds(imgIds=[imgId])
-            anns = coco.loadAnns(annIds)
+        annIds = coco.getAnnIds(imgIds=[imgId])
+        anns = coco.loadAnns(annIds)
 
-            # Visualize annotations
-            img = cv2.imread(img_fn)
-            if img is None:
-                print("Warning: Could not find ", img_fn)
-                img = np.zeros((im["height"], im["width"], 3))
-            img = vis_image(coco, img, anns)
-            cv2.imwrite(out_fn, img)
+        # Visualize annotations
+        img = cv2.imread(img_fn)
+        if img is None:
+            print("Warning: Could not find ", img_fn)
+            img = np.zeros((im["height"], im["width"], 3))
+        img = vis_image(coco, img, anns)
+        cv2.imwrite(out_fn, img)
 
-            # Add to html
+        # Append to html
+        with open(html_fn, "a") as f:
             tag = "<img src=\"" + im_name +"\" height=\"300\">"
             f.write(tag + "\n")
 

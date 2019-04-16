@@ -8,10 +8,6 @@ from pycocotools.cocoeval import COCOeval
 
 from coco_utils.coco_format import *
 
-def load_json(file_name):
-    with open(file_name, 'r') as f:
-        return json.load(f)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')
@@ -23,7 +19,7 @@ if __name__ == "__main__":
     print(args)
 
     coco = COCO(args.ann_fn)
-    ann_list = load_json(args.ann_list)
+    ann_list = read_json(args.ann_list)
 
     images = coco.dataset["images"]
     annotations = make_annotations(ann_list)

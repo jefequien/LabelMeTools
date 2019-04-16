@@ -4,10 +4,6 @@ import argparse
 from coco_utils.coco_format import *
 from coco_utils.dummy_datasets import *
 
-def read_list(file_name):
-    with open(file_name, 'r') as f:
-        return f.read().splitlines()
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--ann_fn', type=str, help='Annotation file')

@@ -1,8 +1,9 @@
-import argparse
 import os
-import json
-import numpy as np
 import cv2
+import json
+import argparse
+import re
+import numpy as np
 from tqdm import tqdm
 
 from pycocotools import mask as COCOmask
@@ -56,12 +57,12 @@ def make_ann(mask, iscrowd=0):
 
     ann = {}
     ann["segmentation"] = segm
-    ann["area"] = int(COCOmask.area(segm))
     ann["bbox"] = list(COCOmask.toBbox(segm))
+    ann["area"] = int(COCOmask.area(segm))
     ann["iscrowd"] = int(iscrowd)
     return ann
 
-def save_ann_fn(images, annotations, categories, out_fn):
+def save_ann_fn(images, annotations, categories, out_fn, indent=2):
     ann_fn = {}
     ann_fn["images"] = images
     ann_fn["annotations"] = annotations
@@ -72,9 +73,9 @@ def save_ann_fn(images, annotations, categories, out_fn):
         os.makedirs(dirname)
     
     with open(out_fn, 'w') as f:
-        json.dump(ann_fn, f, indent=2)
+        json.dump(ann_fn, f, indent=indent)
 
-def print_ann_fn(ann_fn):
+def print_ann_fn(ann_fn, show_examples=False):
     coco = COCO(ann_fn)
     print("File name:", ann_fn)
     print("Images:", len(coco.imgs))
@@ -88,9 +89,25 @@ def print_ann_fn(ann_fn):
         counts[catName] = len(annIds)
     print("Counts:", counts)
 
+    if show_examples:
+        for img in coco.dataset["images"][:3]:
+            print(img)
+        for ann in coco.dataset["annotations"][:3]:
+            print(ann)
+        for cat in coco.dataset["categories"][:3]:
+            print(cat)
+
+def read_list(file_name):
+    with open(file_name, 'r') as f:
+        return f.read().splitlines()
+
+def read_json(file_name):
+    with open(file_name, 'r') as f:
+        return json.load(f)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--ann_fn', type=str)
     args = parser.parse_args()
 
-    print_ann_fn(args.ann_fn)
+    print_ann_fn(args.ann_fn, show_examples=True)

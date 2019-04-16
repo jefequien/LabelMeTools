@@ -8,7 +8,7 @@ from scipy.io import loadmat
 
 from coco_format import *
 
-def make_annotations(ann_dir, im_list):
+def make_ade20k_annotations(ann_dir, im_list):
     annotations = []
     for i, im_name in enumerate(im_list):
         print(i, im_name, len(annotations))
@@ -118,8 +118,8 @@ if __name__ == "__main__":
     im_list_renamed = ["{}/{}".format(im_name.split("/")[2], os.path.basename(im_name)) for im_name in im_list]
 
     # Make annotations
+    annotations = make_ade20k_annotations(ann_dir, im_list)
     images = make_images(im_list_renamed, im_dir)
-    annotations = make_annotations(ann_dir, im_list)
     categories = make_categories(cat_list)
     out_fn = os.path.join(ann_dir, "../full_{}_wrong_size.json".format(args.split))
     save_ann_fn(images, annotations, categories, out_fn)
@@ -128,6 +128,7 @@ if __name__ == "__main__":
     # Correct annotation sizes
     coco = COCO(out_fn)
     correct_annotation_sizes(coco)
+
     images = coco.dataset["images"]
     annotations = coco.dataset["annotations"]
     categories = coco.dataset["categories"]
