@@ -79,24 +79,25 @@ def make_apollo_categories():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--split', type=str, default="val")
+    parser.add_argument('--data_dir', default='../../data/apolloscape', help='the dir of ground truth')
     args = parser.parse_args()
     print(args)
 
     data_dir = "/Users/jeffreyhu/Documents/Torralba/datasets/apolloscape"
-    im_dir = os.path.join(data_dir, "images/")
-    ann_dir = os.path.join(data_dir, "annotations/")
-    raw_data_dir = os.path.join(data_dir, "raw_data/")
+    im_dir = os.path.join(args.data_dir, "images/")
+    ann_dir = os.path.join(args.data_dir, "annotations/")
+    raw_dir = os.path.join(args.data_dir, "raw_data/")
     
     # Load image list
     if args.split == "train":
-        im_list_fn = os.path.join(raw_data_dir, "train/split/train-list.txt")
+        im_list_fn = os.path.join(raw_dir, "train/split/train-list.txt")
     elif args.split == "val":
-        im_list_fn = os.path.join(raw_data_dir, "train/split/validation-list.txt")
+        im_list_fn = os.path.join(raw_dir, "train/split/validation-list.txt")
     elif args.split == "sample_data":
         raise Exception("Sample data not implemented")
     im_list = read_list(im_list_fn)
 
-    annotations = make_apollo_annotations(raw_data_dir, args.split, im_list)
+    annotations = make_apollo_annotations(raw_dir, args.split, im_list)
     categories = make_apollo_categories()
     images = make_images(im_list, im_dir)
 
