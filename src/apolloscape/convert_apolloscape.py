@@ -33,8 +33,8 @@ def make_apollo_annotations(data_dir, split, im_list):
         claimed_mask = np.zeros((image.shape[0], image.shape[1]), dtype='uint8') # For handling occlusions
         for car_pose in car_poses:
             mask = visualizer.render_car(car_pose, image, intrinsic, fill=True)
-            # mask[claimed_mask != 0] = 0
-            # claimed_mask[mask != 0] = 255
+            mask[claimed_mask != 0] = 0
+            claimed_mask[mask != 0] = 255
 
             ann = make_ann(mask)
             ann["id"] = len(annotations) + 1
