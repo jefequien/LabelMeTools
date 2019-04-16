@@ -4,6 +4,7 @@ sys.path.append('../coco_utils')
 import cv2
 import argparse
 import numpy as np
+from tqdm import tqdm
 
 import car_models
 from render_car_instances import CarPoseVisualizer
@@ -16,9 +17,10 @@ def make_apollo_annotations(data_dir, split, im_list):
     visualizer = CarPoseVisualizer(args)
 
     annotations = []
-    for i, image_name in enumerate(im_list):
-        print(i, image_name)
+    imgId = 0
+    for image_name in tqdm(im_list):
         image_name = image_name.replace(".jpg", "")
+        imgId += 1
 
         # Get all segmentation masks
         all_masks = []
@@ -36,7 +38,7 @@ def make_apollo_annotations(data_dir, split, im_list):
 
             ann = make_ann(mask)
             ann["id"] = len(annotations) + 1
-            ann["image_id"] = i + 1
+            ann["image_id"] = imgId
             ann["category_id"] = 1
             annotations.append(ann)
 
@@ -59,7 +61,7 @@ def make_apollo_annotations(data_dir, split, im_list):
 
             ann = {}
             ann["id"] = len(annotations) + 1
-            ann["image_id"] = i + 1
+            ann["image_id"] = imgId
             ann["category_id"] = 1
             ann["num_keypoints"] = len(kps)
             ann["keypoints"] = a.flatten().tolist()
