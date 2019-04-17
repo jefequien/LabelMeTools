@@ -41,7 +41,9 @@ def assocatiate_keypoints(anns):
                 ann["keypoints"] = keyp_ann["keypoints"]
                 ann["num_keypoints"] = num_kps
                 max_good_kps = num_good_kps
-        other_anns.append(ann)
+        
+        if max_good_kps > 0:
+            other_anns.append(ann)
     return other_anns
 
 def print_annotation_types(anns):
