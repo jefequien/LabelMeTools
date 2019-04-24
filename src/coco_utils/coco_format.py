@@ -75,7 +75,7 @@ def save_ann_fn(images, annotations, categories, out_fn, indent=2):
     with open(out_fn, 'w') as f:
         json.dump(ann_fn, f, indent=indent)
 
-def print_ann_fn(ann_fn, count=True, show_examples=False):
+def print_ann_fn(ann_fn, count=True, show_examples=None):
     if isinstance(ann_fn, str):
         print("File name:", ann_fn)
         coco = COCO(ann_fn)
@@ -85,6 +85,7 @@ def print_ann_fn(ann_fn, count=True, show_examples=False):
     imgs_with_anns = set([coco.anns[annId]["image_id"] for annId in coco.anns])
     print("Images: {}, Annotations: {}, Categories: {}, Images with anns: {}".format(len(coco.imgs), len(coco.anns), len(coco.cats), len(imgs_with_anns)))
 
+    # Score threshold
     if "score" in coco.dataset["annotations"][0]:
         thresholds = [0.8, 0.6, 0.4, 0.2, 0]
         counts = []
@@ -93,6 +94,12 @@ def print_ann_fn(ann_fn, count=True, show_examples=False):
             counts.append(len(anns))
         print("Num of anns with score:", thresholds, counts)
 
+    if "accepted" in coco.dataset["annotations"][0]:
+        accepted = len([ann for ann in coco.dataset["annotations"] if ann["accepted"]])
+        rejected = len([ann for ann in coco.dataset["annotations"] if not ann["accepted"]])
+        print("Accepted: {}, Rejected: {}".format(accepted, rejected))
+
+    # Count category frequencies
     if count:
         counts = {}
         for catId in coco.cats:
@@ -101,15 +108,16 @@ def print_ann_fn(ann_fn, count=True, show_examples=False):
             counts[catName] = len(annIds)
         print("Counts:", counts)
 
-    if show_examples:
+    # Show examples for each category
+    if show_examples is not None:
         print("Image examples:")
-        for img in coco.dataset["images"][:2]:
+        for img in coco.dataset["images"][:show_examples]:
             print(img)
         print("Annotation examples:")
-        for ann in coco.dataset["annotations"][:2]:
+        for ann in coco.dataset["annotations"][:show_examples]:
             print(ann)
         print("Category examples:")
-        for cat in coco.dataset["categories"][:2]:
+        for cat in coco.dataset["categories"][:show_examples]:
             print(cat)
 
 def read_list(file_name):
@@ -125,4 +133,4 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--ann_fn', type=str)
     args = parser.parse_args()
 
-    print_ann_fn(args.ann_fn, count=True, show_examples=True)
+    print_ann_fn(args.ann_fn, count=True, show_examples=2)

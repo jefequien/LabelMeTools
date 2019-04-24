@@ -57,7 +57,7 @@ def merge_cocos(coco0, coco1):
     coco.dataset["annotations"] = annotations
     coco.dataset["categories"] = categories
     coco.createIndex()
-    print_ann_fn(coco, False, False)
+    print_ann_fn(coco)
     return coco
 
 
