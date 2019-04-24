@@ -8,8 +8,8 @@ from tqdm import tqdm
 from pycocotools.coco import COCO
 
 # Bundles are Coco annotation files
-API_ENDPOINT = "http://localhost:3000/api/bundles"
-# API_ENDPOINT = "https://labelmelite.csail.mit.edu/api/bundles"
+# API_ENDPOINT = "http://localhost:3000/api/bundles"
+API_ENDPOINT = "https://labelmelite.csail.mit.edu/api/bundles"
 
 def threshold(coco, t):
     annotations = []
@@ -74,11 +74,11 @@ def post_bundles(bundles):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-a', '--ann_fn', type=str, default="../../LabelMe-Lite/data/ade20k/annotations/instances_val_test.json")
+    parser.add_argument('-f', '--ann_fn', type=str)
     args = parser.parse_args()
 
     coco = COCO(args.ann_fn)
-    threshold(coco, 0.5)
+    threshold(coco, 0.2)
 
     bundles = split_into_bundles(coco)
     bundle_ids = post_bundles(bundles)

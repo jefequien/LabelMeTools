@@ -85,6 +85,14 @@ def print_ann_fn(ann_fn, show_examples=False):
     imgs_with_anns = set([coco.anns[annId]["image_id"] for annId in coco.anns])
     print("Images: {}, Annotations: {}, Categories: {}, Images with anns: {}".format(len(coco.imgs), len(coco.anns), len(coco.cats), len(imgs_with_anns)))
 
+    if "score" in coco.dataset["annotations"][0]:
+        thresholds = [0.8, 0.6, 0.4, 0.2, 0]
+        counts = []
+        for t in thresholds:
+            anns = [ann for ann in coco.dataset["annotations"] if ann["score"] > t]
+            counts.append(len(anns))
+        print("Num of anns with score:", thresholds, counts)
+
     counts = {}
     for catId in coco.cats:
         catName = coco.cats[catId]["name"]

@@ -152,7 +152,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--im_dir', type=str, default="/data/vision/torralba/ade20k-places/data", help='Images directory')
     args = parser.parse_args()
     if args.out_dir == None:
-        args.out_dir = args.ann_fn.replace(".json", "")
+        args.out_dir = args.ann_fn.replace(".json", "visualized")
     print(args)
 
     if not os.path.exists(args.out_dir):

@@ -5,8 +5,7 @@ import argparse
 from tqdm import tqdm
 
 from pycocotools.coco import COCO
-
-from coco_utils.coco_format import *
+from coco_format import *
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
