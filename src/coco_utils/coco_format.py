@@ -76,11 +76,14 @@ def save_ann_fn(images, annotations, categories, out_fn, indent=2):
         json.dump(ann_fn, f, indent=indent)
 
 def print_ann_fn(ann_fn, show_examples=False):
-    coco = COCO(ann_fn)
-    print("File name:", ann_fn)
-    print("Images:", len(coco.imgs))
-    print("Annotations:", len(coco.anns))
-    print("Categories:", len(coco.cats))
+    if isinstance(ann_fn, str):
+        print("File name:", ann_fn)
+        coco = COCO(ann_fn)
+    elif isinstance(ann_fn, COCO):
+        coco = ann_fn
+
+    imgs_with_anns = set([coco.anns[annId]["image_id"] for annId in coco.anns])
+    print("Images: {}, Annotations: {}, Categories: {}, Images with anns: {}".format(len(coco.imgs), len(coco.anns), len(coco.cats), len(imgs_with_anns)))
 
     counts = {}
     for catId in coco.cats:
@@ -90,11 +93,14 @@ def print_ann_fn(ann_fn, show_examples=False):
     print("Counts:", counts)
 
     if show_examples:
-        for img in coco.dataset["images"][:3]:
+        print("Image examples:")
+        for img in coco.dataset["images"][:2]:
             print(img)
-        for ann in coco.dataset["annotations"][:3]:
+        print("Annotation examples:")
+        for ann in coco.dataset["annotations"][:2]:
             print(ann)
-        for cat in coco.dataset["categories"][:3]:
+        print("Category examples:")
+        for cat in coco.dataset["categories"][:2]:
             print(cat)
 
 def read_list(file_name):

@@ -1,5 +1,7 @@
-import argparse
 import os
+import sys
+sys.path.append("../coco_utils")
+import argparse
 import cv2
 import numpy as np
 

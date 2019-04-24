@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append("../coco_utils")
 import argparse
 import json
 import logging
