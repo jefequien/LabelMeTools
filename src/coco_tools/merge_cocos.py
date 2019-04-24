@@ -23,12 +23,14 @@ def merge_cocos(coco0, coco1):
 
         if img["file_name"] not in filename_to_id:
             filename_to_id[img["file_name"]] = len(images) + 1
-            img["id"] = filename_to_id[img["file_name"]]
             images.append(img)
+        img["id"] = filename_to_id[img["file_name"]]
+
         if cat["name"] not in catname_to_id:
             catname_to_id[cat["name"]] = len(categories) + 1
-            cat["id"] = catname_to_id[cat["name"]]
             categories.append(cat)
+        cat["id"] = catname_to_id[cat["name"]]
+
         ann["id"] = len(annotations) + 1
         ann["image_id"] = img["id"]
         ann["category_id"] = cat["id"]
@@ -41,12 +43,14 @@ def merge_cocos(coco0, coco1):
 
         if img["file_name"] not in filename_to_id:
             filename_to_id[img["file_name"]] = len(filename_to_id) + 1
-            img["id"] = filename_to_id[img["file_name"]]
             images.append(img)
+        img["id"] = filename_to_id[img["file_name"]]
+
         if cat["name"] not in catname_to_id:
             catname_to_id[cat["name"]] = len(catname_to_id) + 1
-            cat["id"] = catname_to_id[cat["name"]]
             categories.append(cat)
+        cat["id"] = catname_to_id[cat["name"]]
+
         ann["id"] = len(annotations) + 1
         ann["image_id"] = img["id"]
         ann["category_id"] = cat["id"]
