@@ -57,16 +57,17 @@ def merge_cocos(coco0, coco1):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--indir', type=str, required=True)
-    parser.add_argument('-o', '--outdir', type=str, required=True)
+    parser.add_argument('-i', '--in_dir', type=str, required=True)
+    parser.add_argument('-o', '--out_fn', type=str, required=True)
+    if not args.out_fn:
+        args.out_fn = os.path.join(args.in_dir, "merged.json")
     args = parser.parse_args()
 
-    out_fn = os.path.join(args.outdir, "merged.json")
-    ann_fns = [os.path.join(args.indir, fn) for fn in os.listdir(args.indir) if ".json" in fn]
+    ann_fns = [os.path.join(args.in_dir, fn) for fn in os.listdir(args.in_dir) if ".json" in fn]
 
     coco = COCO()
     for ann_fn in ann_fns:
         coco = merge_cocos(coco, COCO(ann_fn))
 
-    save_ann_fn(coco.dataset["images"], coco.dataset["annotations"], coco.dataset["categories"], out_fn)
-    print_ann_fn(out_fn)
+    save_ann_fn(coco.dataset["images"], coco.dataset["annotations"], coco.dataset["categories"], args.out_fn)
+    print_ann_fn(args.out_fn)
