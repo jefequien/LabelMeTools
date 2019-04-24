@@ -59,9 +59,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--in_dir', type=str, required=True)
     parser.add_argument('-o', '--out_fn', type=str, required=True)
+    args = parser.parse_args()
     if not args.out_fn:
         args.out_fn = os.path.join(args.in_dir, "merged.json")
-    args = parser.parse_args()
+    print(args)
 
     ann_fns = [os.path.join(args.in_dir, fn) for fn in os.listdir(args.in_dir) if ".json" in fn]
 
