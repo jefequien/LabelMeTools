@@ -75,7 +75,7 @@ def save_ann_fn(images, annotations, categories, out_fn, indent=2):
     with open(out_fn, 'w') as f:
         json.dump(ann_fn, f, indent=indent)
 
-def print_ann_fn(ann_fn, show_examples=False):
+def print_ann_fn(ann_fn, count=True, show_examples=False):
     if isinstance(ann_fn, str):
         print("File name:", ann_fn)
         coco = COCO(ann_fn)
@@ -93,12 +93,13 @@ def print_ann_fn(ann_fn, show_examples=False):
             counts.append(len(anns))
         print("Num of anns with score:", thresholds, counts)
 
-    counts = {}
-    for catId in coco.cats:
-        catName = coco.cats[catId]["name"]
-        annIds = coco.getAnnIds(catIds=[catId])
-        counts[catName] = len(annIds)
-    print("Counts:", counts)
+    if count:
+        counts = {}
+        for catId in coco.cats:
+            catName = coco.cats[catId]["name"]
+            annIds = coco.getAnnIds(catIds=[catId])
+            counts[catName] = len(annIds)
+        print("Counts:", counts)
 
     if show_examples:
         print("Image examples:")
@@ -124,4 +125,4 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--ann_fn', type=str)
     args = parser.parse_args()
 
-    print_ann_fn(args.ann_fn, show_examples=True)
+    print_ann_fn(args.ann_fn, count=True, show_examples=True)

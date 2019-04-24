@@ -4,6 +4,7 @@ sys.path.append("../coco_utils")
 import argparse
 import cv2
 import numpy as np
+from tqdm import tqdm
 
 from pycocotools.coco import COCO
 from coco_format import *
@@ -21,14 +22,16 @@ def merge_cocos(coco0, coco1):
         cat = coco0.cats[ann["category_id"]]
 
         if img["file_name"] not in filename_to_id:
-            filename_to_id[img["file_name"]] = len(filename_to_id) + 1
+            filename_to_id[img["file_name"]] = len(images) + 1
             img["id"] = filename_to_id[img["file_name"]]
             images.append(img)
         if cat["name"] not in catname_to_id:
-            catname_to_id[cat["name"]] = len(catname_to_id) + 1
+            catname_to_id[cat["name"]] = len(categories) + 1
             cat["id"] = catname_to_id[cat["name"]]
             categories.append(cat)
         ann["id"] = len(annotations) + 1
+        ann["image_id"] = img["id"]
+        ann["category_id"] = cat["id"]
         annotations.append(ann)
 
     for annId in coco1.anns:
@@ -45,6 +48,8 @@ def merge_cocos(coco0, coco1):
             cat["id"] = catname_to_id[cat["name"]]
             categories.append(cat)
         ann["id"] = len(annotations) + 1
+        ann["image_id"] = img["id"]
+        ann["category_id"] = cat["id"]
         annotations.append(ann)
 
     coco = COCO()
@@ -52,13 +57,14 @@ def merge_cocos(coco0, coco1):
     coco.dataset["annotations"] = annotations
     coco.dataset["categories"] = categories
     coco.createIndex()
+    print_ann_fn(coco, False, False)
     return coco
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--in_dir', type=str, required=True)
-    parser.add_argument('-o', '--out_fn', type=str, required=True)
+    parser.add_argument('-o', '--out_fn', type=str)
     args = parser.parse_args()
     if not args.out_fn:
         args.out_fn = os.path.join(args.in_dir, "merged.json")
@@ -67,7 +73,7 @@ if __name__ == "__main__":
     ann_fns = [os.path.join(args.in_dir, fn) for fn in os.listdir(args.in_dir) if ".json" in fn]
 
     coco = COCO()
-    for ann_fn in ann_fns:
+    for ann_fn in tqdm(ann_fns):
         coco = merge_cocos(coco, COCO(ann_fn))
 
     save_ann_fn(coco.dataset["images"], coco.dataset["annotations"], coco.dataset["categories"], args.out_fn)
