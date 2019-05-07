@@ -128,6 +128,12 @@ def read_json(file_name):
     with open(file_name, 'r') as f:
         return json.load(f)
 
+def write_list(file_name, l):
+    with open(file_name, 'w') as f:
+        for i in l:
+            f.write(i + "\n")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--ann_fn', type=str)

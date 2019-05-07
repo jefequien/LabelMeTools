@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append("../coco_utils")
 import random
 import argparse
 import requests
@@ -6,10 +8,7 @@ import json
 from tqdm import tqdm
 
 from pycocotools.coco import COCO
-
-# Bundles are Coco annotation files
-# API_ENDPOINT = "http://localhost:3000/api/bundles"
-API_ENDPOINT = "https://labelmelite.csail.mit.edu/api/bundles"
+from coco_format import *
 
 def threshold(coco, t):
     annotations = []
@@ -38,6 +37,7 @@ def make_bundle(coco, annotations):
     return bundle
 
 def split_into_bundles(coco, NUM=30):
+    print("Splitting into bundles...")
     # Sort annotations by category
     anns_sorted = []
     for catId in coco.cats:
@@ -53,16 +53,16 @@ def split_into_bundles(coco, NUM=30):
         bundles.append(bundle)
     return bundles
 
-def post_bundles(bundles):
-    bundle_ids = []
+def post_bundles(job_id, bundles, base_url):
+    print("Posting bundles to {}".format(base_url))
     status_codes = {}
-    for bundle in bundles:
-        r = requests.post(url=API_ENDPOINT, json=bundle)
+    bundle_ids = []
+    endpoint = base_url + "/api/bundles?job_id=" + job_id;
+    for bundle in tqdm(bundles):
+        r = requests.post(url=endpoint, json=bundle)
         if r.status_code == 200:
-            response = json.loads(r.text)
-            bundle_info = response["bundle_info"]
-            bundle_ids.append(bundle_info["bundle_id"])
-            print(bundle_info)
+            res = json.loads(r.text)
+            bundle_ids.append(res["bundle_id"])
 
         if r.status_code not in status_codes:
             status_codes[r.status_code] = 0
@@ -74,14 +74,20 @@ def post_bundles(bundles):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--ann_fn', type=str)
+    parser.add_argument('-j', '--job_id', type=str, required=True)
+    parser.add_argument('-f', '--ann_fn', type=str, required=True)
+    parser.add_argument('-p', '--prod', action='store_true')
     args = parser.parse_args()
+    print(args)
 
     coco = COCO(args.ann_fn)
-    threshold(coco, 0.2)
+
+    base_url = "http://localhost:3000"
+    if args.prod:
+        base_url = "https://labelmelite.csail.mit.edu"
 
     bundles = split_into_bundles(coco)
-    bundle_ids = post_bundles(bundles)
+    bundle_ids = post_bundles(args.job_id, bundles, base_url)
 
-
+    write_list("{}.txt".format(args.job_id), bundle_ids)
 
