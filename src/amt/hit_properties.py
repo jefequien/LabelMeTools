@@ -13,26 +13,26 @@ qualifications.add(qual_1)
 qualifications.add(qual_2)
 
 YesNoHitProperties = {
-  "title": "LabelMeLite Yes/No Task Test",
-  "description": "Decide whether the following annotations are good or bad.",
+  "title": "Choose good annotations of the following category",
+  "description": "LabelMeLite Yes/No Tool",
   "keywords": "image,annotation",
   "reward": 0.05,
   "duration": 60*10,
-  "frame_height": 1000,
-  "max_assignments": 1,
+  "frame_height": 800,
+  "max_assignments": 5,
   "country": ["US", "DE"],
   "qualifications": qualifications
 }
 
 
 EditHitProperties = {
-  "title": "LabelMeLite Edit Task",
-  "description": "Refine the following annotations.",
+  "title": "Refine annotations of the following category",
+  "description": "LabelMeLite Edit Tool",
   "keywords": "image,annotation",
   "reward": 0.05,
   "duration": 60*10,
-  "frame_height": 1000,
-  "max_assignments": 1,
+  "frame_height": 800,
+  "max_assignments": 5,
   "country": ["US", "DE"],
   "qualifications": qualifications
 }

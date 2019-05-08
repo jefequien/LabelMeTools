@@ -130,8 +130,8 @@ def read_json(file_name):
 
 def write_list(file_name, l):
     with open(file_name, 'w') as f:
-        for i in l:
-            f.write(i + "\n")
+        for item in l:
+            f.write(item + "\n")
 
 
 if __name__ == "__main__":
