@@ -62,71 +62,67 @@ def make_ann(mask, iscrowd=0):
     ann["iscrowd"] = int(iscrowd)
     return ann
 
-def save_ann_fn(images, annotations, categories, out_fn, indent=2):
-    ann_fn = {}
-    ann_fn["images"] = images
-    ann_fn["annotations"] = annotations
-    ann_fn["categories"] = categories
+# def save_ann_fn(images, annotations, categories, out_fn, indent=2):
+#     ann_fn = {}
+#     ann_fn["images"] = images
+#     ann_fn["annotations"] = annotations
+#     ann_fn["categories"] = categories
 
+#     dirname = os.path.dirname(out_fn)
+#     if dirname and not os.path.exists(dirname):
+#         os.makedirs(dirname)
+    
+#     with open(out_fn, 'w') as f:
+#         json.dump(ann_fn, f, indent=indent)
+
+def save_coco(coco, out_fn, indent=2):
     dirname = os.path.dirname(out_fn)
     if dirname and not os.path.exists(dirname):
         os.makedirs(dirname)
-    
+
     with open(out_fn, 'w') as f:
-        json.dump(ann_fn, f, indent=indent)
+        json.dump(coco.dataset, f, indent=indent)
 
-def print_ann_fn(ann_fn, count=True, show_examples=None):
-    if isinstance(ann_fn, str):
-        print("File name:", ann_fn)
-        coco = COCO(ann_fn)
-    elif isinstance(ann_fn, COCO):
-        coco = ann_fn
-
-    imgs_with_anns = set([coco.anns[annId]["image_id"] for annId in coco.anns])
-    print("Images: {}, Annotations: {}, Categories: {}, Images with anns: {}".format(len(coco.imgs), len(coco.anns), len(coco.cats), len(imgs_with_anns)))
-
-    # Score threshold
-    if "score" in coco.dataset["annotations"][0]:
-        thresholds = [0.8, 0.6, 0.4, 0.2, 0]
-        counts = []
-        for t in thresholds:
-            anns = [ann for ann in coco.dataset["annotations"] if ann["score"] > t]
-            counts.append(len(anns))
-        print("Num of anns with score:", thresholds, counts)
-
-    if "accepted" in coco.dataset["annotations"][0]:
-        accepted = len([ann for ann in coco.dataset["annotations"] if ann["accepted"]])
-        rejected = len([ann for ann in coco.dataset["annotations"] if not ann["accepted"]])
-        print("Accepted: {}, Rejected: {}".format(accepted, rejected))
+def print_coco(coco):
+    print("Coco Info:")
+    # Statistics
+    stats = {}
+    stats["images"] = len(coco.dataset["images"])
+    stats["annotations"] = len(coco.dataset["annotations"])
+    stats["categories"] = len(coco.dataset["categories"])
+    stats["images_with_annotations"] = len(set([coco.anns[annId]["image_id"] for annId in coco.anns]))
+    print("Stats:", stats)
 
     # Count category frequencies
-    if count:
-        counts = {}
-        for catId in coco.cats:
-            catName = coco.cats[catId]["name"]
-            annIds = coco.getAnnIds(catIds=[catId])
-            counts[catName] = len(annIds)
-        print("Counts:", counts)
+    counts = {}
+    for catId in coco.cats:
+        catName = coco.cats[catId]["name"]
+        annIds = coco.getAnnIds(catIds=[catId])
+        counts[catName] = len(annIds)
+    print("Counts:", counts)
 
-    # Show examples for each category
-    if show_examples is not None:
-        print("Image examples:")
-        for img in coco.dataset["images"][:show_examples]:
-            print(img)
-        print("Annotation examples:")
-        for ann in coco.dataset["annotations"][:show_examples]:
-            print(ann)
-        print("Category examples:")
-        for cat in coco.dataset["categories"][:show_examples]:
-            print(cat)
+    # Score threshold
+    score_stats = {}
+    thresholds = [0.8, 0.6, 0.4, 0.2, 0]
+    for t in thresholds:
+        anns = [ann for ann in coco.dataset["annotations"] if "score" in ann and ann["score"] > t]
+        score_stats[t] = len(anns)
+    print("Anns with score above:", score_stats)
 
-def read_list(file_name):
-    with open(file_name, 'r') as f:
-        return f.read().splitlines()
+def print_coco_examples(coco, num_examples=3):
+    # Show examples for each field
+    for field in coco.dataset:
+        print("{}".format(field))
+        for item in coco.dataset[field][:num_examples]:
+            print(item)
 
 def read_json(file_name):
     with open(file_name, 'r') as f:
         return json.load(f)
+
+def read_list(file_name):
+    with open(file_name, 'r') as f:
+        return f.read().splitlines()
 
 def write_list(file_name, l):
     with open(file_name, 'w') as f:
@@ -139,4 +135,6 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--ann_fn', type=str)
     args = parser.parse_args()
 
-    print_ann_fn(args.ann_fn, count=True, show_examples=2)
+    coco = COCO(args.ann_fn)
+    print_coco(coco)
+    print_coco_examples(coco)

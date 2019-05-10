@@ -15,13 +15,13 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--out_fn', type=str, default=None, help='Output coco file')
     args = parser.parse_args()
     if not args.out_fn:
-        args.out_fn = args.ann_fn.replace(".json", "_car.json")
+        args.out_fn = args.ann_fn.replace(".json", "_5random.json")
     print(args)
 
     coco = COCO(args.ann_fn)
-    select_cats = ["car"]
+    select_cats = ["car", "door", "counter", "traffic light", "flag"]
     catIds = [cat["id"] for cat in coco.dataset["categories"] if cat["name"] in select_cats]
-    numPerClass = 30*20
+    numPerClass = 30*3
 
     annotations = []
     for catId in catIds:

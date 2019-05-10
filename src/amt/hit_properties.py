@@ -6,14 +6,14 @@ qualifications = Qualifications()
 qual_1 = PercentAssignmentsApprovedRequirement(
     comparator="GreaterThan",
     integer_value="0")
-qual_2 = NumberHitsApprovedRequirement(
-    comparator="GreaterThan",
-    integer_value="0")
+# qual_2 = NumberHitsApprovedRequirement(
+#     comparator="GreaterThan",
+#     integer_value="0")
 qualifications.add(qual_1)
-qualifications.add(qual_2)
+# qualifications.add(qual_2)
 
 YesNoHitProperties = {
-  "title": "Choose good annotations of the following category",
+  "title": "Choose good annotations of the following category. 5 categories",
   "description": "LabelMeLite Yes/No Tool",
   "keywords": "image,annotation",
   "reward": 0.05,

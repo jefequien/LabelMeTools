@@ -8,6 +8,18 @@ from video_annotation import VideoAnnotation, read_file
 CROP_SIZE = 128
 CONTEXT = 1
 
+def stitch_images(images, shape=(3,3)):
+    n = shape[0] * shape[1]
+    h, w = (128, 128)
+    if len(images) > 0:
+        h, w = images[0].shape[:2]
+    stitched = np.zeros((h*shape[0], w*shape[1], 3), dtype="uint8")
+    for i, image in enumerate(images[:n]):
+        x = i % shape[1]
+        y = int(i / shape[1])
+        stitched[y*h:(y+1)*h, x*w:(x+1)*w] = image
+    return stitched
+
 def crop_image(im, bbox):
     (x, y, w, h) = bbox
     x_c = x + w/2

@@ -36,12 +36,6 @@ def threshold(coco, t):
     coco.dataset["annotations"] = anns
     coco.createIndex()
 
-def load_result(result):
-    coco = COCO()
-    coco.dataset = result
-    coco.createIndex()
-    print("{} images, {} annotations".format(len(coco.dataset["images"]), len(coco.dataset["annotations"])))
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--ann_fn', type=str)

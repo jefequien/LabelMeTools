@@ -70,16 +70,6 @@ class COCOResults(object):
         return repr(self.results)
 
 
-def filter_category(coco, catId):
-    annIds = coco.getAnnIds(catIds=[catId])
-    anns = coco.loadAnns(annIds)
-
-    coco.dataset["annotations"] = anns
-    coco.dataset["categories"] = [coco.cats[catId]]
-    coco.createIndex()
-    return coco
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-g', '--coco_gt', type=str)

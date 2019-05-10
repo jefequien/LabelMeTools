@@ -1,9 +1,5 @@
 import os
-import sys
-sys.path.append("../coco_utils")
 import argparse
-import cv2
-import numpy as np
 from tqdm import tqdm
 
 from pycocotools.coco import COCO
@@ -61,7 +57,6 @@ def merge_cocos(coco0, coco1):
     coco.dataset["annotations"] = annotations
     coco.dataset["categories"] = categories
     coco.createIndex()
-    print_ann_fn(coco)
     return coco
 
 
@@ -80,5 +75,8 @@ if __name__ == "__main__":
     for ann_fn in tqdm(ann_fns):
         coco = merge_cocos(coco, COCO(ann_fn))
 
-    save_ann_fn(coco.dataset["images"], coco.dataset["annotations"], coco.dataset["categories"], args.out_fn)
-    print_ann_fn(args.out_fn)
+    save_coco(coco, args.out_fn)
+
+    # Verify out_fn
+    coco = COCO(args.out_fn)
+    print_coco(coco)
