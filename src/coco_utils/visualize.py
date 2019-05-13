@@ -164,22 +164,27 @@ def vis_coco(coco, im_dir, out_dir):
         image = load_image(coco, im_dir, img)
         for ann in anns:
             image = vis_ann(coco, image, ann)
+
         out_fn = os.path.join(out_dir, img["file_name"])
         if not os.path.exists(os.path.dirname(out_fn)):
             os.makedirs(os.path.dirname(out_fn))
         cv2.imwrite(out_fn, image)
+
         html_fn = os.path.join(html_dir, "all_images.html")
         add_to_html(html_fn, out_fn)
 
         # Instance visualization
         for ann in anns:
+            cat_name = coco.cats[ann["category_id"]]["name"]
             instance = load_image(coco, im_dir, img)
-            instance = vis_ann(coco, instance, ann, crop=True)
-            out_fn = os.path.join(out_dir, "instances", "{}.jpg".format(ann["id"]))
+            instance = vis_ann(coco, instance, ann, showClass=False, showBbox=False, showSegm=True, showKps=False, crop=True)
+
+            out_fn = os.path.join(out_dir, "instances", "{}/{}.jpg".format(cat_name, ann["id"]))
             if not os.path.exists(os.path.dirname(out_fn)):
                 os.makedirs(os.path.dirname(out_fn))
             cv2.imwrite(out_fn, instance)
-            html_fn = os.path.join(html_dir, "{}.html".format(coco.cats[ann["category_id"]]["name"]))
+
+            html_fn = os.path.join(html_dir, "{}.html".format(cat_name))
             add_to_html(html_fn, out_fn)
 
 def add_to_html(html_fn, out_fn):
