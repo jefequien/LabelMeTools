@@ -8,7 +8,7 @@ from pycocotools.coco import COCO
 from pycocotools import mask as COCOmask
 from pycocotools.cocoeval import COCOeval
 
-from coco_utils.coco_format import *
+from coco_format import *
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -23,8 +23,8 @@ if __name__ == "__main__":
     coco = COCO(args.ann_fn)
     ann_list = read_json(args.ann_list)
 
-    images = coco.dataset["images"]
-    annotations = make_annotations(ann_list)
-    categories = coco.dataset["categories"]
-    save_ann_fn(images, annotations, categories, args.out_fn)
-    print_ann_fn(args.out_fn)
+    coco.dataset["annotations"] = make_annotations(ann_list)
+    save_coco(coco, args.out_fn)
+    
+    coco = COCO(args.out_fn)
+    print_coco(coco)

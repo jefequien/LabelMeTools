@@ -5,3 +5,7 @@ data
 outputs
 *.json
 *.pkl
+*.png
+*.jpg
+*.jpeg
+*.html

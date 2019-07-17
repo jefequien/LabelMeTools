@@ -62,19 +62,6 @@ def make_ann(mask, iscrowd=0):
     ann["iscrowd"] = int(iscrowd)
     return ann
 
-# def save_ann_fn(images, annotations, categories, out_fn, indent=2):
-#     ann_fn = {}
-#     ann_fn["images"] = images
-#     ann_fn["annotations"] = annotations
-#     ann_fn["categories"] = categories
-
-#     dirname = os.path.dirname(out_fn)
-#     if dirname and not os.path.exists(dirname):
-#         os.makedirs(dirname)
-    
-#     with open(out_fn, 'w') as f:
-#         json.dump(ann_fn, f, indent=indent)
-
 def save_coco(coco, out_fn, indent=2):
     dirname = os.path.dirname(out_fn)
     if dirname and not os.path.exists(dirname):
@@ -82,32 +69,32 @@ def save_coco(coco, out_fn, indent=2):
 
     with open(out_fn, 'w') as f:
         json.dump(coco.dataset, f, indent=indent)
+    print("Saved coco to", out_fn)
 
 def print_coco(coco):
-    print("Coco Info:")
+    coco.dataset["annotations"] = [ann for ann in coco.dataset["annotations"] if ann["score"] > 0.5]
+    coco.createIndex()
+
+    images = coco.dataset["images"]
+    annotations = coco.dataset["annotations"]
+    categories = coco.dataset["categories"]
+    if len(coco.imgs) == 0:
+        coco.createIndex()
+
     # Statistics
     stats = {}
-    stats["images"] = len(coco.dataset["images"])
-    stats["annotations"] = len(coco.dataset["annotations"])
-    stats["categories"] = len(coco.dataset["categories"])
-    stats["images_with_annotations"] = len(set([coco.anns[annId]["image_id"] for annId in coco.anns]))
-    print("Stats:", stats)
+    stats["images"] = len(images)
+    stats["annotations"] = len(annotations)
+    stats["categories"] = len(categories)
+    stats["images_with_annotations"] = len(set([ann["image_id"] for ann in annotations]))
+    print("Statistics:", stats)
 
     # Count category frequencies
     counts = {}
-    for catId in coco.cats:
-        catName = coco.cats[catId]["name"]
-        annIds = coco.getAnnIds(catIds=[catId])
-        counts[catName] = len(annIds)
-    print("Counts:", counts)
-
-    # Score threshold
-    score_stats = {}
-    thresholds = [0.8, 0.6, 0.4, 0.2, 0]
-    for t in thresholds:
-        anns = [ann for ann in coco.dataset["annotations"] if "score" in ann and ann["score"] > t]
-        score_stats[t] = len(anns)
-    print("Anns with score above:", score_stats)
+    for cat in categories:
+        ann_ids = coco.getAnnIds(catIds=[cat["id"]])
+        counts[cat["name"]] = len(ann_ids)
+    print("Category counts:", counts)
 
 def print_coco_examples(coco, num_examples=3):
     # Show examples for each field
@@ -138,3 +125,4 @@ if __name__ == "__main__":
     coco = COCO(args.ann_fn)
     print_coco(coco)
     print_coco_examples(coco)
+

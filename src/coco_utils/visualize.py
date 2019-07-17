@@ -32,8 +32,8 @@ def vis_mask(img, mask, alpha=0.4, show_border=True, border_thick=1, color=_GREE
     img[idx[0], idx[1], :] += alpha * np.array(color)
 
     if show_border:
-        _, contours, _ = cv2.findContours(
-            mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+        contours, hierarchy = cv2.findContours(
+            mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)[-2:]
         cv2.drawContours(img, contours, -1, _WHITE, border_thick, cv2.LINE_AA)
 
     return img.astype(np.uint8)
@@ -127,6 +127,10 @@ def load_image(coco, im_dir, img):
 
 def crop_square(image, bbox, margin=2, crop_size=256):
     x, y, w, h = bbox
+    if min(h,w) <= 1:
+        # Bad bbox
+        return np.zeros((crop_size, crop_size, 3), dtype='uint8')
+
     x_c = x + w/2
     y_c = y + h/2
     m = max(h,w) * margin
