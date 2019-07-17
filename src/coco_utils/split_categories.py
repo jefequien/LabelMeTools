@@ -22,4 +22,3 @@ def split_categories(ann_fn, out_dir):
         coco_cat.dataset["categories"] = categories
         save_coco(coco_cat, cat_fn)
         print_coco(coco_cat)
-

@@ -64,7 +64,10 @@ if __name__ == "__main__":
         if ".json" == os.path.splitext(filename)[1]:
             ann_fn = os.path.join(args.in_dir, filename)
             coco = COCO(ann_fn)
+<<<<<<< HEAD
             print_coco(coco)
+=======
+>>>>>>> 718b0e58a20653deb9ec22514b9a52ad0945f67c
             cocos.append(coco)
 
     coco = merge_cocos(cocos)
