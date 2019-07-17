@@ -1,56 +1,47 @@
 import os
 import argparse
+import copy
 from tqdm import tqdm
 
 from pycocotools.coco import COCO
 from coco_format import *
 
-def merge_cocos(coco0, coco1):
+def merge_cocos(cocos):
     images = []
     annotations = []
     categories = []
+
     filename_to_id = {}
     catname_to_id = {}
 
-    for annId in coco0.anns:
-        ann = coco0.anns[annId]
-        img = coco0.imgs[ann["image_id"]]
-        cat = coco0.cats[ann["category_id"]]
+    for coco in tqdm(cocos):
+        for ann in coco.dataset["annotations"]:
+            img = coco.imgs[ann["image_id"]]
+            cat = coco.cats[ann["category_id"]]
 
-        if img["file_name"] not in filename_to_id:
-            filename_to_id[img["file_name"]] = len(images) + 1
-            images.append(img)
-        img["id"] = filename_to_id[img["file_name"]]
+            img = copy.deepcopy(img)
+            ann = copy.deepcopy(ann)
+            cat = copy.deepcopy(cat)
+            ann_id = len(annotations) + 1
+            img_id = len(images) + 1
+            cat_id = len(categories) + 1
+            if img["filename"] in filename_to_id:
+                img_id = filename_to_id[img["filename"]]
+            else:
+                filename_to_id[img["filename"]] = img_id
+                images.append(img)
+            if cat["name"] in catname_to_id:
+                cat_id = catname_to_id[cat["name"]]
+            else:
+                catname_to_id[cat["name"]] = cat_id
+                categories.append(cat)
 
-        if cat["name"] not in catname_to_id:
-            catname_to_id[cat["name"]] = len(categories) + 1
-            categories.append(cat)
-        cat["id"] = catname_to_id[cat["name"]]
-
-        ann["id"] = len(annotations) + 1
-        ann["image_id"] = img["id"]
-        ann["category_id"] = cat["id"]
-        annotations.append(ann)
-
-    for annId in coco1.anns:
-        ann = coco1.anns[annId]
-        img = coco1.imgs[ann["image_id"]]
-        cat = coco1.cats[ann["category_id"]]
-
-        if img["file_name"] not in filename_to_id:
-            filename_to_id[img["file_name"]] = len(filename_to_id) + 1
-            images.append(img)
-        img["id"] = filename_to_id[img["file_name"]]
-
-        if cat["name"] not in catname_to_id:
-            catname_to_id[cat["name"]] = len(catname_to_id) + 1
-            categories.append(cat)
-        cat["id"] = catname_to_id[cat["name"]]
-
-        ann["id"] = len(annotations) + 1
-        ann["image_id"] = img["id"]
-        ann["category_id"] = cat["id"]
-        annotations.append(ann)
+            ann["id"] = ann_id
+            img["id"] = img_id
+            cat["id"] = cat_id
+            ann["image_id"] = img["id"]
+            ann["category_id"] = cat["id"]
+            annotations.append(ann)
 
     coco = COCO()
     coco.dataset["images"] = images
@@ -59,22 +50,23 @@ def merge_cocos(coco0, coco1):
     coco.createIndex()
     return coco
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--in_dir', type=str, required=True)
     parser.add_argument('-o', '--out_fn', type=str)
     args = parser.parse_args()
     if not args.out_fn:
-        args.out_fn = os.path.join(args.in_dir, "merged.json")
+        args.out_fn = os.path.normpath(args.in_dir) + ".json"
     print(args)
 
-    ann_fns = [os.path.join(args.in_dir, fn) for fn in os.listdir(args.in_dir) if ".json" in fn]
+    cocos = []
+    for filename in sorted(os.listdir(args.in_dir)):
+        if ".json" == os.path.splitext(filename)[1]:
+            ann_fn = os.path.join(args.in_dir, filename)
+            coco = COCO(ann_fn)
+            cocos.append(coco)
 
-    coco = COCO()
-    for ann_fn in tqdm(ann_fns):
-        coco = merge_cocos(coco, COCO(ann_fn))
-
+    coco = merge_cocos(cocos)
     save_coco(coco, args.out_fn)
 
     # Verify out_fn
