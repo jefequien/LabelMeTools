@@ -30,7 +30,7 @@ def split_coco(coco, size=10000):
         c = COCO()
         c.dataset["images"] = imgs
         c.dataset["annotations"] = anns
-        c.dataset["categories"] = []
+        c.dataset["categories"] = categories
         c.createIndex()
         cocos.append(c)
     return cocos

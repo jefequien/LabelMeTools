@@ -37,9 +37,9 @@ def merge_cocos(cocos):
                 cat = copy.deepcopy(cat)
                 cat["id"] = len(categories) + 1
                 if cat["name"] in catname_to_id:
-                    cat_id = catname_to_id[cat["name"]]
+                    cat["id"] = catname_to_id[cat["name"]]
                 else:
-                    catname_to_id[cat["name"]] = cat_id
+                    catname_to_id[cat["name"]] = cat["id"]
                     categories.append(cat)
 
                 # Handle ann
