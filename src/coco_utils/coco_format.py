@@ -72,12 +72,6 @@ def save_coco(coco, out_fn, indent=2):
     print("Saved coco to", out_fn)
 
 def print_coco(coco):
-<<<<<<< HEAD
-    coco.dataset["annotations"] = [ann for ann in coco.dataset["annotations"] if ann["score"] > 0.5]
-    coco.createIndex()
-
-=======
->>>>>>> 718b0e58a20653deb9ec22514b9a52ad0945f67c
     images = coco.dataset["images"]
     annotations = coco.dataset["annotations"]
     categories = coco.dataset["categories"]
