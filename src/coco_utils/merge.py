@@ -14,34 +14,40 @@ def merge_cocos(cocos):
     filename_to_id = {}
     catname_to_id = {}
 
+    # For each coco
     for coco in tqdm(cocos):
-        for ann in coco.dataset["annotations"]:
-            img = coco.imgs[ann["image_id"]]
-            cat = coco.cats[ann["category_id"]]
+
+        # For each img
+        for img in coco.dataset["images"]:
+            ann_ids = coco.getAnnIds(imgIds=[img["id"]])
+            anns = coco.loadAnns(ann_ids)
 
             img = copy.deepcopy(img)
-            ann = copy.deepcopy(ann)
-            cat = copy.deepcopy(cat)
-            ann_id = len(annotations) + 1
-            img_id = len(images) + 1
-            cat_id = len(categories) + 1
+            img["id"] = len(images) + 1
             if img["file_name"] in filename_to_id:
-                img_id = filename_to_id[img["file_name"]]
+                img["id"] = filename_to_id[img["file_name"]]
             else:
-                filename_to_id[img["file_name"]] = img_id
+                filename_to_id[img["file_name"]] = img["id"]
                 images.append(img)
-            if cat["name"] in catname_to_id:
-                cat_id = catname_to_id[cat["name"]]
-            else:
-                catname_to_id[cat["name"]] = cat_id
-                categories.append(cat)
 
-            ann["id"] = ann_id
-            img["id"] = img_id
-            cat["id"] = cat_id
-            ann["image_id"] = img["id"]
-            ann["category_id"] = cat["id"]
-            annotations.append(ann)
+            # For each ann
+            for ann in anns:
+                # Handle cat
+                cat = coco.cats[ann["category_id"]]
+                cat = copy.deepcopy(cat)
+                cat["id"] = len(categories) + 1
+                if cat["name"] in catname_to_id:
+                    cat_id = catname_to_id[cat["name"]]
+                else:
+                    catname_to_id[cat["name"]] = cat_id
+                    categories.append(cat)
+
+                # Handle ann
+                ann = copy.deepcopy(ann)
+                ann["id"] = len(annotations) + 1
+                ann["image_id"] = img["id"]
+                ann["category_id"] = cat["id"]
+                annotations.append(ann)
 
     coco = COCO()
     coco.dataset["images"] = images
@@ -62,9 +68,9 @@ if __name__ == "__main__":
     cocos = []
     for filename in sorted(os.listdir(args.in_dir)):
         if ".json" == os.path.splitext(filename)[1]:
+            print("Loading", filename)
             ann_fn = os.path.join(args.in_dir, filename)
             coco = COCO(ann_fn)
-            print_coco(coco)
             cocos.append(coco)
 
     coco = merge_cocos(cocos)
